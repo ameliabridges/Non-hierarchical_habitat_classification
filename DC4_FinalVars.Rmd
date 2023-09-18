@@ -1,0 +1,494 @@
+---
+title: "Data Chapter 4 Code: Broadscale Habitat Classification"
+author: "Amelia E.H. Bridges"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    toc: true
+    toc_depth: 6
+    theme: cayman
+    highlight: github
+---
+
+```{r, echo=FALSE, results='asis'}
+```
+
+# Habitat Classification Work, November 2020
+
+## Important Packages
+```{r, warning=FALSE, message=FALSE}
+library(raster)
+library(sf)
+library(rgeos)
+library(maptools)
+library(sp)
+library(maps)
+library(tibble)
+library(tidyverse)
+library(rgdal)
+library(ggplot2)
+library(fpc)
+```
+
+## Water mass structure layer
+
+I've downloaded the present, benthic, mean temp and sal layers from Bio-Oracle v2. I am going to attempt to cluster them following [McQuaid *et al*. (2020)] (https://search.proquest.com/docview/2468439085/fulltextPDF/ED41FB4F8CA549C2PQ/1?accountid=14711).
+
+```{r}
+bo<-c("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/BioOracle/")
+temp <- raster(paste0(bo, "BioO_temp_10km_WGS84.tif"))
+sal <- raster(paste0(bo, "BioO_sal_10km_WGS84.tif"))
+
+# temp
+tmean <-(cellStats(temp, stat='mean'))
+tstdev <-(cellStats(temp, stat='sd'))
+tnorm <- ((temp-tmean)/(tstdev))
+tmin <-(cellStats(tnorm, stat='min'))
+tmax <-(cellStats(tnorm, stat='max'))
+tcor <- ((tnorm-tmin)/(tmax-tmin))
+
+# sal
+smean <-(cellStats(sal, stat='mean'))
+sstdev <-(cellStats(sal, stat='sd'))
+snorm <- ((sal-smean)/(sstdev))
+smin <-(cellStats(snorm, stat='min'))
+smax <-(cellStats(snorm, stat='max'))
+scor <- ((snorm-smin)/(smax-smin))
+
+tDF <- data.frame (rasterToPoints(tcor))
+sDF <- data.frame (rasterToPoints(scor))
+names(tDF)[3] <- "temperature"
+names(sDF)[3] <- "salinity"
+wms_DF <- data.frame (sDF$salinity, tDF$temperature) # Add all variables to new data frame and select only columns with data in to remove georeferencing
+
+# CLARA using ASW as indice
+clara_wms <- pamk(wms_DF,krange=2:40,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(wms_DF, "Euclidean"),
+                  critout=TRUE)
+
+asw_wms<-as.data.frame(clara_wms$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_wms<-cbind(noclusters, asw_wms)
+names(results_wms)[1] <- "clusters"
+names(results_wms)[2] <- "asw"
+write.csv(results_wms, file="results_wms_asw.csv", row.names = FALSE)
+
+ggplot(data=results_wms, aes(x=clusters, y=asw, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 40) + 
+  ggtitle("Avg. Sil. Width for WMS clusters")
+
+# CLARA using CH as indice
+clara_wms <- pamk(wms_DF,krange=2:40,criterion="ch", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(wms_DF, "Euclidean"),
+                  critout=TRUE)
+
+ch_wms<-as.data.frame(clara_wms$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_wms<-cbind(noclusters, ch_wms)
+names(results_wms)[1] <- "clusters"
+names(results_wms)[2] <- "ch"
+write.csv(results_wms, file="results_wms_ch.csv", row.names = FALSE)
+
+ggplot(data=results_wms, aes(x=clusters, y=ch, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 40) + 
+  ggtitle("Calinski-Harabasz Index for WMS clusters")
+
+# Agreed number of clusters
+clara_wms <- pamk(wms_DF,krange=12,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(wms_DF, "Euclidean"),
+                  critout=TRUE)
+
+clara_wms_df <- data.frame(sDF$x, sDF$y, clara_wms$pamobject$clustering)
+
+names(clara_wms_df) <- c("x", "y", "cluster")
+coordinates(clara_wms_df) <- ~x+y
+clara_wms_Ras <- rasterize(clara_wms_df, temp)
+plot(clara_wms_Ras[[2]])
+
+```
+
+```{r}
+# WRITING OUT THE SHAPEFILE
+
+#writeOGR(clara_wms_df, 
+         #dsn="E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/WaterMassStructure", layer="clara_wms_df_XX",
+         #driver = "ESRI Shapefile")
+
+```
+
+## Lutz POC
+
+```{r}
+#LutzFolder<-c("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/LutzPOC")
+poc<-raster("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/LutzPOC/Lutz_POC_Resampled10km_WGS84.tif")
+
+# temp
+pmean <-(cellStats(poc, stat='mean'))
+pstdev <-(cellStats(poc, stat='sd'))
+pnorm <- ((poc-pmean)/(pstdev))
+pmin <-(cellStats(pnorm, stat='min'))
+pmax <-(cellStats(pnorm, stat='max'))
+pcor <- ((pnorm-pmin)/(pmax-pmin))
+
+pDF <- data.frame (rasterToPoints(pcor))
+names(pDF)[3] <- "poc"
+poc_DF <- data.frame (pDF$poc) # Add all variables to new data frame and select only columns with data in to remove georeferencing
+
+# CLARA using ASW as indice
+clara_poc <- pamk(poc_DF,krange=2:40,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(poc_DF, "Euclidean"),
+                  critout=TRUE)
+
+asw_poc<-as.data.frame(clara_poc$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_poc<-cbind(noclusters, asw_poc)
+names(results_poc)[1] <- "clusters"
+names(results_poc)[2] <- "asw"
+write.csv(results_poc, file="results_poc_asw.csv", row.names = FALSE)
+
+ggplot(data=results_poc, aes(x=clusters, y=asw, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 30) + 
+  ggtitle("Avg. Sil. Width for POC clusters")
+
+# CLARA using CH as indice
+clara_poc <- pamk(poc_DF,krange=2:40,criterion="ch", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(poc_DF, "Euclidean"),
+                  critout=TRUE)
+
+ch_poc<-as.data.frame(clara_poc$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_poc<-cbind(noclusters, ch_poc)
+names(results_poc)[1] <- "clusters"
+names(results_poc)[2] <- "ch"
+write.csv(results_poc, file="results_poc_ch.csv", row.names = FALSE)
+
+ggplot(data=results_poc, aes(x=clusters, y=ch, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 30) + 
+  ggtitle("Calinski-Harabasz Index for POC clusters")
+
+# Agreed number of clusters
+clara_poc <- pamk(poc_DF,krange=5,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(poc_DF, "Euclidean"),
+                  critout=TRUE)
+
+clara_poc_df <- data.frame(pDF$x, pDF$y, clara_poc$pamobject$clustering)
+
+names(clara_poc_df) <- c("x", "y", "cluster")
+coordinates(clara_poc_df) <- ~x+y
+clara_poc_Ras <- rasterize(clara_poc_df, poc, progress="text")
+plot(clara_poc_Ras[[2]])
+
+```
+
+```{r}
+#  WRITING OUT THE SHAPEFILE
+#writeOGR(clara_poc_df, 
+         #dsn="E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/LutzPOC", layer="clara_poc_df_5",
+         #driver = "ESRI Shapefile")
+```
+
+## Yool POC
+
+```{r}
+#LutzFolder<-c("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/LutzPOC")
+poc<-raster("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/YuleLayers/Medusa Layers_0.08rez/Yool_POC_10km_WGS84.tif")
+
+# temp
+pmean <-(cellStats(poc, stat='mean'))
+pstdev <-(cellStats(poc, stat='sd'))
+pnorm <- ((poc-pmean)/(pstdev))
+pmin <-(cellStats(pnorm, stat='min'))
+pmax <-(cellStats(pnorm, stat='max'))
+pcor <- ((pnorm-pmin)/(pmax-pmin))
+
+pDF <- data.frame (rasterToPoints(pcor))
+names(pDF)[3] <- "poc"
+poc_DF <- data.frame (pDF$poc) # Add all variables to new data frame and select only columns with data in to remove georeferencing
+
+# CLARA using ASW as indice
+clara_poc <- pamk(poc_DF,krange=2:40,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(poc_DF, "Euclidean"),
+                  critout=TRUE)
+
+asw_poc<-as.data.frame(clara_poc$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_poc<-cbind(noclusters, asw_poc)
+names(results_poc)[1] <- "clusters"
+names(results_poc)[2] <- "asw"
+write.csv(results_poc, file="results_yool_poc_asw.csv", row.names = FALSE)
+
+ggplot(data=results_poc, aes(x=clusters, y=asw, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 30) + 
+  ggtitle("Avg. Sil. Width for Yool POC clusters")
+
+# CLARA using CH as indice
+clara_poc <- pamk(poc_DF,krange=2:40,criterion="ch", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(poc_DF, "Euclidean"),
+                  critout=TRUE)
+
+ch_poc<-as.data.frame(clara_poc$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_poc<-cbind(noclusters, ch_poc)
+names(results_poc)[1] <- "clusters"
+names(results_poc)[2] <- "ch"
+write.csv(results_poc, file="results_yool_poc_ch.csv", row.names = FALSE)
+
+ggplot(data=results_poc, aes(x=clusters, y=ch, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 30) + 
+  ggtitle("Calinski-Harabasz Index for Yool POC clusters")
+
+# Agreed number of clusters
+clara_poc <- pamk(poc_DF,krange=5,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(poc_DF, "Euclidean"),
+                  critout=TRUE)
+
+clara_poc_df <- data.frame(pDF$x, pDF$y, clara_poc$pamobject$clustering)
+
+names(clara_poc_df) <- c("x", "y", "cluster")
+coordinates(clara_poc_df) <- ~x+y
+clara_poc_Ras <- rasterize(clara_poc_df, poc, progress="text")
+plot(clara_poc_Ras[[2]])
+
+```
+
+```{r}
+#  WRITING OUT THE SHAPEFILE
+writeOGR(clara_poc_df, 
+         dsn="E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/YuleLayers/Medusa Layers_0.08rez", layer="clara_yool_poc_df_5",
+         driver = "ESRI Shapefile")
+```
+
+## Substrate layer (10km)
+
+Due to the fact that no global substrate layer exists that isn't shit, we're making a substrate layer from slope, FBPI and BBPI. Scale factors for the BPIs are 20km and 100km. This is based on the GEBCO 2020 release. First I projected the GEBCO download to GHO at 430m. Then resampled to 10km from 430m. Then calculated the bathymetric derivatives. Then projected back into WGS84.
+```{r}
+bbpi <- raster("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/GEBCO_2020_BathyDerivatives/GEBCO2020_BBPI_10km_WGSfromMOL.tif")
+fbpi <- raster("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/GEBCO_2020_BathyDerivatives/GEBCO2020_FBPI_10km_WGSfromMOL.tif")
+slope <- raster("E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers/GEBCO_2020_BathyDerivatives/GEBCO2020_Slope_10km_WGSfromMOL.tif")
+
+#bbpi
+bmean <-(cellStats(bbpi, stat='mean'))
+bstdev <-(cellStats(bbpi, stat='sd'))
+bnorm <- ((bbpi-bmean)/(bstdev))
+bmin <-(cellStats(bnorm, stat='min'))
+bmax <-(cellStats(bnorm, stat='max'))
+bcor <- ((bnorm-bmin)/(bmax-bmin))
+
+#fbpi
+fmean <-(cellStats(fbpi, stat='mean'))
+fstdev <-(cellStats(fbpi, stat='sd'))
+fnorm <- ((fbpi-fmean)/(fstdev))
+fmin <-(cellStats(fnorm, stat='min'))
+fmax <-(cellStats(fnorm, stat='max'))
+fcor <- ((fnorm-fmin)/(fmax-fmin))
+
+# slope
+smean <-(cellStats(slope, stat='mean'))
+sstdev <-(cellStats(slope, stat='sd'))
+snorm <- ((slope-smean)/(sstdev))
+smin <-(cellStats(snorm, stat='min'))
+smax <-(cellStats(snorm, stat='max'))
+scor <- ((snorm-smin)/(smax-smin))
+
+bDF <- data.frame (rasterToPoints(bcor))
+fDF <- data.frame (rasterToPoints(fcor))
+sDF <- data.frame (rasterToPoints(scor))
+names(bDF)[3] <- "bbpi"
+names(fDF)[3] <- "fbpi"
+names(sDF)[3] <- "slope"
+
+new<-merge(bDF, fDF, by=c("x","y"))
+new2<-merge(new, sDF, by=c("x","y"))
+
+subs_DF <- na.omit(data.frame(new2$bbpi, new2$fbpi, new2$slope)) # Add all variables to new data frame and select only columns with data in to remove georeferencing
+
+# CLARA using ASW as indice
+clara_subs <- pamk(subs_DF,krange=2:40,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(subs_DF, "Euclidean"),
+                  critout=TRUE)
+
+asw_subs<-as.data.frame(clara_subs$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_subs<-cbind(noclusters, asw_subs)
+names(results_subs)[1] <- "clusters"
+names(results_subs)[2] <- "asw"
+write.csv(results_subs, file="results_subs_asw.csv", row.names = FALSE)
+
+ggplot(data=results_subs, aes(x=clusters, y=asw, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 40) + 
+  ggtitle("Avg. Sil. Width for Topography (10km) clusters")
+
+# CLARA using CH as indice
+clara_subs <- pamk(subs_DF,krange=2:40,criterion="ch", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(subs_DF, "Euclidean"),
+                  critout=TRUE)
+
+ch_subs<-as.data.frame(clara_subs$crit)
+noclusters <- as.data.frame(as.numeric(c(1:40)))
+results_subs<-cbind(noclusters, ch_subs)
+names(results_subs)[1] <- "clusters"
+names(results_subs)[2] <- "ch"
+write.csv(results_subs, file="results_subs_ch.csv", row.names = FALSE)
+
+ggplot(data=results_subs, aes(x=clusters, y=ch, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(3, 40) + 
+  ggtitle("Calinski-Harabasz Index for Topography (10km) clusters")
+
+# Agreed number of clusters
+clara_subs <- pamk(subs_DF,krange=3,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(subs_DF, "Euclidean"),
+                  critout=TRUE)
+
+clara_subs_df <- data.frame(new2$x, new2$y, clara_subs$pamobject$clustering)
+
+names(clara_subs_df) <- c("x", "y", "cluster")
+coordinates(clara_subs_df) <- ~x+y
+clara_subs_Ras <- rasterize(clara_subs_df, bbpi, progress="text")
+plot(clara_subs_Ras[[2]])
+```
+
+
+```{r}
+#  WRITING OUT THE SHAPEFILE
+#writeOGR(clara_subs_df, 
+         #dsn="E:/OneDrive/OneDrive - University of Plymouth/GIS Files/World_Layers", layer="clara_subsfromMOL_df_3",
+         #driver = "ESRI Shapefile")
+```
+
+## Making plots: ASW
+
+```{r}
+wms_asw<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/results_wms_asw.csv", head=TRUE, sep=",")
+topo_asw<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/results_subs_asw.csv", head=TRUE, sep=",")
+prod_asw<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/results_poc_asw.csv", head=TRUE, sep=",")
+
+ggplot() +
+  geom_point(data=wms_asw, aes(x=clusters, y=asw, colour="WMS")) +
+  geom_line(data=wms_asw, aes(x=clusters, y=asw, colour="WMS")) +
+  geom_point(data=topo_asw, aes(x=clusters, y=asw, colour="Topography")) +
+  geom_line(data=topo_asw, aes(x=clusters, y=asw, colour="Topography")) +
+  geom_point(data=prod_asw, aes(x=clusters, y=asw, colour="Productivity")) +
+  geom_line(data=prod_asw, aes(x=clusters, y=asw, colour="Productivity")) +
+  scale_color_manual(values=c("#1b9e77", "#d95f02", "#7570b3")) +
+  xlab("Number of clusters") +
+  ylab("Average Silhouette Width (ASW)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.title.x = element_text(size=12, colour = "black"),
+        axis.title.y = element_text(size=12, colour = "black"),
+        axis.text.x = element_text(size=12, colour = "black"),
+        axis.text.y = element_text(size=12, colour = "black"),
+        plot.title = element_text(hjust=0.5),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size=12, colour = "black"))
+
+#ggsave("ASWplot.jpeg", plot=last_plot(), device = "jpeg", path = "E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/Figures for chapter/", dpi=600)
+```
+
+## Making plots: CH index
+
+```{r}
+wms_ch<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/results_wms_ch.csv", head=TRUE, sep=",")
+topo_ch<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/results_subs_ch.csv", head=TRUE, sep=",")
+prod_ch<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/results_poc_ch.csv", head=TRUE, sep=",")
+
+ggplot() +
+  geom_point(data=wms_ch, aes(x=clusters, y=ch, colour="WMS")) +
+  geom_line(data=wms_ch, aes(x=clusters, y=ch, colour="WMS")) +
+  geom_point(data=topo_ch, aes(x=clusters, y=ch, colour="Topography")) +
+  geom_line(data=topo_ch, aes(x=clusters, y=ch, colour="Topography")) +
+  geom_point(data=prod_ch, aes(x=clusters, y=ch, colour="Productivity")) +
+  geom_line(data=prod_ch, aes(x=clusters, y=ch, colour="Productivity")) +
+  scale_color_manual(values=c("#1b9e77", "#d95f02", "#7570b3")) +
+  xlab("Number of clusters") +
+  ylab("Calinski-Harabasz (CH) Index") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.title.x = element_text(size=12, colour = "black"),
+        axis.title.y = element_text(size=12, colour = "black"),
+        axis.text.x = element_text(size=12, colour = "black"),
+        axis.text.y = element_text(size=12, colour = "black"),
+        plot.title = element_text(hjust=0.5),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size=12, colour = "black"))
+
+ggsave("CH_plot.jpeg", plot=last_plot(), device = "jpeg", path = "E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/Figures for chapter/", dpi=600)
+```
+
+## L.pertusa reef predictions
+```{r}
+data<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/Lp_PresPreds_HCs_summaryStats2.csv", head=TRUE, sep=",")
+
+habs <- subset(data, DataType=="HabClass")
+
+habs2 <- habs
+habs2$HabitatClass <- factor(habs2$HabitatClass, levels = habs2$HabitatClass[order(habs2$Occurence, decreasing = TRUE)])
+
+ggplot(data=habs2, aes(x=HabitatClass, y=Occurence, fill=DataType)) +
+  geom_bar(stat="identity", width=0.5) +
+  scale_fill_manual(values=c("#1b9e77")) +
+  theme_bw() +
+  xlab("Habitat Class") +
+  ylab("Occurence") +
+  ylim(0, 3000) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.title.x = element_text(size=14, colour = "black"),
+        axis.title.y = element_text(size=14, colour = "black"),
+        axis.text.x = element_text(size=10, colour = "black", angle=90, vjust=0.4, hjust=1),
+        axis.text.y = element_text(size=12, colour = "black"),
+        legend.position = "none")
+
+ggsave("Lpertusa_HC_plot.jpeg", plot=last_plot(), device = "jpeg", path = "E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/Figures for chapter/", dpi=600)
+
+```
+
+## Final Habitat Classes
+```{r}
+data<-read.csv("E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/GlobalHabitatClasses_summstats.csv", head=TRUE, sep=",")
+data$DataType<-"HC"
+areaclasses <- c("10,000,000+",
+                 "1,000,100-10,000,000",
+                 "100,100-1,000,000",
+                 "10,100-100,000",
+                 "1,100-10,000",
+                 "100-1,000")
+
+ggplot(data=data, aes(x=Total_area_km2, y=No.classes, fill=DataType)) +
+  geom_bar(stat="identity", width=0.5) +
+  scale_fill_manual(values=c("#1b9e77")) +
+  theme_bw() +
+  labs(x = bquote("Total area of habitat classes"~(km^2))) +
+  ylab("No. habitat classes") +
+  coord_flip() +
+  scale_x_discrete(limits = areaclasses) +
+  scale_y_continuous(limits = c(0, 600)) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(axis.title.x = element_text(size=14, colour = "black"),
+        axis.title.y = element_text(size=14, colour = "black"),
+        axis.text.x = element_text(size=12, colour = "black"),
+        axis.text.y = element_text(size=12, colour = "black"),
+        legend.position = "none")
+
+ggsave("HC_size_dist_plot.jpeg", plot=last_plot(), device = "jpeg", path = "E:/OneDrive/OneDrive - University of Plymouth/4. Data Chapter 4/Figures for chapter/", dpi=600)
+
+
+```
+

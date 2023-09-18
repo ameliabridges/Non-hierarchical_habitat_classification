@@ -1,0 +1,19 @@
+---
+title: "A guide to developing non-hierarchical habitat classifications using open-source data and software"
+author: "Amelia E.H. Bridges"
+format: html
+---
+
+# Prepare your folder structure & working environment 
+
+# Read in the data
+
+# Create the input layers
+
+## Water mass structure
+
+## Productivity
+
+## Topography
+
+## Biogeography 
