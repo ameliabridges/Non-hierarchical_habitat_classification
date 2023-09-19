@@ -24,6 +24,7 @@ library(sdmpredictors)
 library(raster)
 library(tidyverse)
 library(fpc)
+library(MultiscaleDTM)
 ```
 
 [Blurb on importance of folder structure]
@@ -56,8 +57,9 @@ my_plot_theme <- function(...){
 }
 ```
 
-
 # Read in the data
+
+## Water mass structure
 
 [Blurb on data repositories, example links etc.]
 
@@ -82,6 +84,75 @@ sal<-load_layers("BO22_salinitymean_bdmean", equalarea = FALSE)
 
 ```
 
+## Productivity
+
+The productivity layer we're using comes from Zenodo. 
+```{r}
+links<-"MEDUSA_ROAM_RCP85_2016-2025_flux.nc"
+url<-"https://zenodo.org/record/6513616/files/MEDUSA_ORCA0083_REGRID_2006-2015_flux.nc?download=1"
+
+# open packages
+library(tidync)
+library(raster)
+library(magrittr)
+library(tidyverse)
+library(tidyselect)
+library(dplyr)
+# 
+"D:/OneDrive/OneDrive - University of Plymouth/In_prep_submittted_manuscripts/Howell_etal_Global_HC" -> base
+
+
+paste0( base,"/","InputLayers") -> wd
+setwd(wd)
+
+
+# set some folders (create them if missing)
+
+paste0(wd, "/", "medusa ncdf") -> ncdf_dir
+dir.create(ncdf_dir)
+paste0(wd, "/", "medusa rasters") -> rasters_dir
+dir.create(rasters_dir)
+
+
+
+
+# to get them all
+"Zenodo links.csv"  %>%  read_csv() -> links
+# take the names of the ncdfs
+links %>%  pull(Name) %>%  str_subset(pattern = ".nc") -> links
+
+# Download them 
+for(i in seq(links)){
+  # set the URL
+  url <- paste0("https://zenodo.org/record/4749206/files/",links[i],"?download=1")
+  # set the name of the downloaded file
+  paste0(ncdf_dir,"/", links[i]) ->  destfile
+  
+  # download (wb mode important!!)
+  download.file(url, destfile, mode = "wb")
+}
+
+# list the ncdfs downloaded
+list.files(ncdf_dir, pattern = ".nc") -> ncdfs
+
+# open ncdfs and export the _avg rasters
+for(i in seq(ncdfs)){
+  tidync(paste0(ncdf_dir, "/", ncdfs[i]) ) -> nc1
+  hyper_tibble(nc1) -> nc1_ti
+  names(nc1_ti) %>% str_subset(pattern = "avg") -> avgVar
+  print(avgVar)
+  rasterFromXYZ(xyz = select(nc1_ti,x,y,dplyr::all_of(avgVar))) ->  r
+  plot(r, main = avgVar)
+  writeRaster(r,paste0(rasters_dir,"/",avgVar,".tif"),overwrite=TRUE)
+}
+
+```
+
+
+## Topography
+
+## Bogeography 
+
 # Create the input layers
 
 [Blurb on CLARA]
@@ -91,7 +162,6 @@ sal<-load_layers("BO22_salinitymean_bdmean", equalarea = FALSE)
 ```{r}
 input_type<-"WMS"
 ```
-
 
 ### Normalising the data 
 
