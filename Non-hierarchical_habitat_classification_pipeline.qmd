@@ -29,12 +29,21 @@ library(MultiscaleDTM)
 
 [Blurb on importance of folder structure]
 
+Your working directory (wd) should be the folder you've downloaded from this GitHub repository where the .Rproj file is located. 
+
 ```{r}
-input_layers_folder<-"D:/OneDrive/OneDrive - University of Plymouth/In_prep_submittted_manuscripts/Howell_etal_Global_HC/InputLayers"
+wd<-getwd()
+wd
+```
 
-output_layers_folder<-"D:/OneDrive/OneDrive - University of Plymouth/In_prep_submittted_manuscripts/Howell_etal_Global_HC/OutputLayers"
+You'll notice there are other subfolders so for ease, let's create paths to them too.
 
-results_folder<-"D:/OneDrive/OneDrive - University of Plymouth/In_prep_submittted_manuscripts/Howell_etal_Global_HC/ResultsFiles"
+```{r}
+input_layers_folder<-paste0(wd, "/InputLayers")
+
+output_layers_folder<-paste0(wd, "/OutputLayers")
+
+results_layers_folder<-paste0(wd, "/Results")
 ```
 
 ```{r}
@@ -59,6 +68,71 @@ my_plot_theme <- function(...){
 
 # Read in the data
 
+## Productivity
+
+The productivity layer we're using comes from the NEMO-MEDUSA model. Authors have uploaded the netCDF version on Zenodo, [here](https://zenodo.org/record/6513616#.Yn6TGx1BzIU). However for ease, the TIFF version is in the InputLayers folder. Let's read it in. 
+
+```{r}
+prod<-raster(paste0(input_layers_folder, "/Yool_POC_10km_WGS84.tif"))
+```
+
+## Topography
+
+In [McQuaid et al. (2023)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#s0220), we used three topographic variables to create our 'topography layer' - these were slope, fine-scale bathymetric position index (FBPI) and broad-scale (BBPI). These variables are derivatives of bathymetry (i.e. they can be calculated from bathymetry).
+
+```{r}
+bathy<-raster(paste0(input_layers_folder, "/GEBCO2020_Depth_10km_WGS84.tif"))
+```
+
+You'll notice that the rasters I'm bringing in are named in similar ways. I use a naming convention that ensures I know the source (the GEBCO 2020 grid), variable (depth), resolution (10km) and projection (WGS84), without having to open the file. When working in R, calling the object (in this case 'bathy') also allows us to quickly look at the details including what coordinate reference system (crs) it's in. 
+
+```{r}
+bathy
+```
+
+As *per* the above, our bathymetry raster is in WGS84. To calculate the bathymetric derivatives we want, we need our bathymetry in an equal-area projection where all cells on the grid are the same size.
+
+There are hundreds of equal-area projections to choose from but we're going to use Mollweide - [this page](https://desktop.arcgis.com/en/arcmap/latest/map/projections/mollweide.htm) explains it's limitations and advantages nicely. The crs for Mollweide is '+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84'.
+
+```{r}
+newproj<-"+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84"
+bathy_MOL<-projectRaster(bathy, crs=newproj, res=c(10000,10000))
+plot(bathy_MOL)
+```
+
+You can see from the map that this is in the Mollweide projection as opposed to the WGS84 version below.
+
+```{r}
+plot(bathy)
+```
+
+### Slope
+
+Now we have out bathymetry data read in and in the correct projection, we need to calculate slope, FBPI and BBPI and we do this using the [MultiscaleDTM](https://rdrr.io/github/ailich/MultiscaleDTM/) package described in [Ilich et al. (2023)](https://onlinelibrary.wiley.com/doi/full/10.1111/tgis.13067). 
+
+```{r}
+slo<-SlpAsp(bathy_MOL, w=c(3,3), unit="degrees", method="queen", metrics="slope")
+slo
+```
+
+R is brilliant for quickly automating tasks, but it's still really important for us to 'eyeball' our data and ensure the input variables look correct. This is where expert opinion and knowing your study area is crucial. 
+
+```{r}
+plot(slo)
+```
+
+These values and the plot look as one would expect for a global slope map, with large ridge systems identified as well as flat abyssal plains. Let's save the output. 
+
+```{r}
+terra::writeRaster(slo, filename=(paste0(input_layers_folder, "/GEBCO2020_Slo_10km_MOL.tif")), overwrite=TRUE, format="GTiff")
+```
+
+
+### Broad-scale bathymetri position index (BBPI)
+
+
+
+## Biogeography 
 ## Water mass structure
 
 [Blurb on data repositories, example links etc.]
@@ -86,11 +160,10 @@ sal<-load_layers("BO22_salinitymean_bdmean", equalarea = FALSE)
 
 ## Productivity
 
-The productivity layer we're using comes from Zenodo. 
+The productivity layer we're using comes from the NEMO-MEDUSA model. Authors have uploaded the netCDF version on Zenodo, [here](https://zenodo.org/record/6513616#.Yn6TGx1BzIU). However for ease, the TIFF version is in the InputLayers folder. Let's read it in. 
 
 ```{r}
-
-
+prod<-raster(paste0(input_layers_folder, "/Yool_POC_10km_WGS84.tif"))
 ```
 
 
