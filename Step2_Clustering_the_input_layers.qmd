@@ -4,16 +4,25 @@ author: "Amelia E.H. Bridges et al."
 format: html
 ---
 
-# HEADING
+# Prepare your working environment
 
-[Blurb on CLARA]
+If you are running these .QMD files as intended, you don't need to re-specify your working directory. If you aren't please go to step 1 and re-run the 'Prepare your folder structure & working environment' section. 
 
-# Water mass structure
+```{r}
+#| message: false
+#| results: false
+#| output: false
+#| warning: false
+
+library(fpc)
+```
+
+# Topography
 
 ## Trialling iterative clustering options
 
 ```{r}
-input_type<-"WMS"
+input_type<-"topo" # change based on whatever variable/group you're clustering 
 ```
 
 ### Normalising the data 
@@ -21,28 +30,38 @@ input_type<-"WMS"
 Data first need to be normalized to between 0 and 1.
 
 ```{r}
-# temp
-tmean<-(cellStats(temp, stat='mean'))
-tstdev<-(cellStats(temp, stat='sd'))
-tnorm<-((temp-tmean)/(tstdev))
-tmin<-(cellStats(tnorm, stat='min'))
-tmax<-(cellStats(tnorm, stat='max'))
-tcor<-((tnorm-tmin)/(tmax-tmin))
+# slo
+mean1<-(cellStats(slo, stat='mean'))
+stdev1<-(cellStats(slo, stat='sd'))
+norm1<-((slo-mean1)/(stdev1))
+min1<-(cellStats(norm1, stat='min'))
+max1<-(cellStats(norm1, stat='max'))
+cor1<-((norm1-min1)/(max1-min1))
 
-# sal
-smean<-(cellStats(sal, stat='mean'))
-sstdev<-(cellStats(sal, stat='sd'))
-snorm<-((sal-smean)/(sstdev))
-smin<-(cellStats(snorm, stat='min'))
-smax<-(cellStats(snorm, stat='max'))
-scor<- ((snorm-smin)/(smax-smin))
+# bbpi
+mean2<-(cellStats(bbpi, stat='mean'))
+stdev2<-(cellStats(bbpi, stat='sd'))
+norm2<-((bbpi-mean2)/(stdev2))
+min2<-(cellStats(norm2, stat='min'))
+max2<-(cellStats(norm2, stat='max'))
+cor2<- ((norm2-min2)/(max2-min2))
 
-tDF<-data.frame(rasterToPoints(tcor))%>%
-  rename(temperature=3)
-sDF <- data.frame (rasterToPoints(scor))%>%
-  rename(salinity=3)
+# bbpi
+mean3<-(cellStats(fbpi, stat='mean'))
+stdev3<-(cellStats(fbpi, stat='sd'))
+norm3<-((fbpi-mean3)/(stdev3))
+min3<-(cellStats(norm3, stat='min'))
+max3<-(cellStats(norm3, stat='max'))
+cor3<- ((norm3-min3)/(max3-min3))
 
-wms_DF<-data.frame(sDF$salinity, tDF$temperature) # Add all variables to new data frame and select only columns with data in to remove georeferencing
+# combine dfs
+DF1<-data.frame(rasterToPoints(cor1))%>%
+  rename(slope=3) # change based on whatever variable/group you're clustering
+DF2<-data.frame (rasterToPoints(cor2))%>%
+  rename(bbpi=3) # change based on whatever variable/group you're clustering
+DF3<-data.frame (rasterToPoints(cor3))%>%
+  rename(fbpi=3) # change based on whatever variable/group you're clustering
+DF<-data.frame(DF2$salinity, DF1$temperature) 
 
 ```
 
@@ -52,11 +71,13 @@ wms_DF<-data.frame(sDF$salinity, tDF$temperature) # Add all variables to new dat
 
 [Blurb on ASW vs. CH index]
 
+The output from the pamk() function gives you the number of clusters and the score. 
+
 ```{r}
 
 # CLARA using ASW as indices
-clara <- pamk(wms_DF,krange=2:20,criterion="asw", usepam=FALSE, 
-                  scaling=FALSE, diss=inherits(wms_DF, "Euclidean"),
+clara <- pamk(DF,krange=2:13,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(DF, "Euclidean"),
                   critout=TRUE)
 ```
 
@@ -64,10 +85,11 @@ The pamk() function creates a list which isn't overly helpful. However, we can e
 
 ```{r}
 asw<-as.data.frame(clara$crit)
-noclusters <- as.data.frame(as.numeric(c(1:20)))
+noclusters <- as.data.frame(as.numeric(c(1:13)))
 results<-cbind(noclusters, asw)%>%
   rename(No_of_clusters=1,
          ASW=2)
+
 ```
 
 These are important results so let's save them in a CSV file in case you want to refer back to them. This is particularly useful when testing high numbers of clusters given the time involved. 
@@ -84,7 +106,7 @@ Visualizing the results is a great way to quickly ascertain how well the data cl
 plot<-ggplot(data=results, aes(x=No_of_clusters, y=ASW, group=1)) +
   geom_line() +
   geom_point() +
-  xlim(2, 20) + 
+  xlim(2, 13) + 
   ggtitle(paste0("Average Silhouette Width for ", input_type, " clusters"))+
   my_plot_theme()+
   xlab("Number of clusters")+
@@ -96,6 +118,8 @@ plot<-ggplot(data=results, aes(x=No_of_clusters, y=ASW, group=1)) +
 We'll also save this plot at a high DPI in case you wan to use it in the future. 
 
 ```{r}
+#| include: false
+
 ggsave(paste0("asw_scores_", input_type, ".jpeg"), 
        plot=last_plot(), 
        device = "jpeg", 
@@ -105,30 +129,196 @@ ggsave(paste0("asw_scores_", input_type, ".jpeg"),
 
 ## Running your selected cluster combination
 
-This is where you bring in expert opinion and consider the number of clusters you expect to have [BLAH BLAH].
+This is where you bring in expert opinion and consider the number of clusters you expect to have. For varying statistical reasons, 2 clusters often scores far higher than any other combination when assessing the cluster structure using ASW. If we exclude 2 clusters, the plot above quite clearly identifies 12 clusters as another 'good' cluster structure. 
+
+Additionally, if you think about the global water mass structure that we're trying to pick out, 2 would be far too few classes However upon searching the literature, we (in the McQuaid *et al*. (2023) publication) deemed 12 to be an reasonable number to accurately reflect global water mass structure. 
 
 ```{r}
-no_of_clusters<-8
+no_of_clusters<-12 # insert your selected number of clusters here
 ```
 
+Now we run the pamk() function but this time, we only run it on the selected number of clusters, not iteratively. 
+
 ```{r}
 
-# Agreed number of clusters
-clara<-pamk(wms_DF,krange=no_of_clusters,criterion="asw", usepam=FALSE, 
-                  scaling=FALSE, diss=inherits(wms_DF, "Euclidean"),
+clara<-pamk(DF,krange=no_of_clusters,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(DF, "Euclidean"),
                   critout=TRUE)
-
-clara_wms_df <- data.frame(sDF$x, sDF$y, clara_wms$pamobject$clustering)
-
-names(clara_wms_df) <- c("x", "y", "cluster")
-coordinates(clara_wms_df) <- ~x+y
-clara_wms_Ras <- rasterize(clara_wms_df, temp)
-plot(clara_wms_Ras[[2]])
 ```
 
+And then convert it into a raster. This step takes a while given we're working across a large grid. 
 
-## Productivity
+```{r}
+clara_df <- data.frame(DF2$x, DF2$y, clara$pamobject$clustering)%>%
+  rename("x"="DF2.x",
+         "y"="DF2.y",
+         "cluster"="clara.pamobject.clustering")
 
-## Topography
+coordinates(clara_df)<-~x+y
+clara_Ras<-rasterize(clara_df, temp)
+```
 
-## Biogeography 
+```{r}
+#| warning: false
+#| message: false
+
+wms<-clara_Ras[[2]]
+
+plot(wms, main="Clustered Water Mass Structure")
+```
+
+This is our clustered input layer for water mass structure so let's save it. 
+
+```{r}
+terra::writeRaster(wms, filename=(paste0(input_layers_folder, "/WMS_12clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+```
+
+# Productivity
+
+# Water mass structure
+
+[Blurb on WMS and why we're clustering T & S together]
+
+## Trialling iterative clustering options
+
+```{r}
+input_type<-"WMS" # change based on whatever variable/group you're clustering 
+```
+
+### Normalising the data 
+
+Data first need to be normalized to between 0 and 1.
+
+```{r}
+# temp
+mean1<-(cellStats(temp, stat='mean'))
+stdev1<-(cellStats(temp, stat='sd'))
+norm1<-((temp-mean1)/(stdev1))
+min1<-(cellStats(norm1, stat='min'))
+max1<-(cellStats(norm1, stat='max'))
+cor1<-((norm1-min1)/(max1-min1))
+
+# sal
+mean2<-(cellStats(sal, stat='mean'))
+stdev2<-(cellStats(sal, stat='sd'))
+norm2<-((sal-mean2)/(stdev2))
+min2<-(cellStats(norm2, stat='min'))
+max2<-(cellStats(norm2, stat='max'))
+cor2<- ((norm2-min2)/(max2-min2))
+
+# combine dfs
+DF1<-data.frame(rasterToPoints(cor1))%>%
+  rename(temperature=3) # change based on whatever variable/group you're clustering
+DF2 <- data.frame (rasterToPoints(cor2))%>%
+  rename(salinity=3) # change based on whatever variable/group you're clustering
+DF<-data.frame(DF2$salinity, DF1$temperature) 
+
+```
+
+### Running & assessing the pamk() function
+
+[Blurb on iteratively testing between 2 and 40 clusters]
+
+[Blurb on ASW vs. CH index]
+
+The output from the pamk() function gives you the number of clusters and the score. 
+
+```{r}
+
+# CLARA using ASW as indices
+clara <- pamk(DF,krange=2:13,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(DF, "Euclidean"),
+                  critout=TRUE)
+```
+
+The pamk() function creates a list which isn't overly helpful. However, we can extract the important bits and interpret it more easily. 
+
+```{r}
+asw<-as.data.frame(clara$crit)
+noclusters <- as.data.frame(as.numeric(c(1:13)))
+results<-cbind(noclusters, asw)%>%
+  rename(No_of_clusters=1,
+         ASW=2)
+
+```
+
+These are important results so let's save them in a CSV file in case you want to refer back to them. This is particularly useful when testing high numbers of clusters given the time involved. 
+
+```{r}
+write.csv(results, paste0(results_folder, "/asw_scores_", input_type, ".csv"), row.names = FALSE)
+```
+
+Visualizing the results is a great way to quickly ascertain how well the data clusters. 
+
+```{r}
+#| warning: false
+
+plot<-ggplot(data=results, aes(x=No_of_clusters, y=ASW, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(2, 13) + 
+  ggtitle(paste0("Average Silhouette Width for ", input_type, " clusters"))+
+  my_plot_theme()+
+  xlab("Number of clusters")+
+  ylab("Average Silhouette Width (ASW)")
+
+
+```
+
+We'll also save this plot at a high DPI in case you wan to use it in the future. 
+
+```{r}
+#| include: false
+
+ggsave(paste0("asw_scores_", input_type, ".jpeg"), 
+       plot=last_plot(), 
+       device = "jpeg", 
+       path = results_folder, 
+       dpi=600)
+```
+
+## Running your selected cluster combination
+
+This is where you bring in expert opinion and consider the number of clusters you expect to have. For varying statistical reasons, 2 clusters often scores far higher than any other combination when assessing the cluster structure using ASW. If we exclude 2 clusters, the plot above quite clearly identifies 12 clusters as another 'good' cluster structure. 
+
+Additionally, if you think about the global water mass structure that we're trying to pick out, 2 would be far too few classes However upon searching the literature, we (in the McQuaid *et al*. (2023) publication) deemed 12 to be an reasonable number to accurately reflect global water mass structure. 
+
+```{r}
+no_of_clusters<-12 # insert your selected number of clusters here
+```
+
+Now we run the pamk() function but this time, we only run it on the selected number of clusters, not iteratively. 
+
+```{r}
+
+clara<-pamk(DF,krange=no_of_clusters,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(DF, "Euclidean"),
+                  critout=TRUE)
+```
+
+And then convert it into a raster. This step takes a while given we're working across a large grid. 
+
+```{r}
+clara_df <- data.frame(DF2$x, DF2$y, clara$pamobject$clustering)%>%
+  rename("x"="DF2.x",
+         "y"="DF2.y",
+         "cluster"="clara.pamobject.clustering")
+
+coordinates(clara_df)<-~x+y
+clara_Ras<-rasterize(clara_df, temp)
+```
+
+```{r}
+#| warning: false
+#| message: false
+
+wms<-clara_Ras[[2]]
+
+plot(wms, main="Clustered Water Mass Structure")
+```
+
+This is our clustered input layer for water mass structure so let's save it. 
+
+```{r}
+terra::writeRaster(wms, filename=(paste0(input_layers_folder, "/WMS_12clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+```

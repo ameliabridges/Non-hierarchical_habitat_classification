@@ -14,7 +14,6 @@ format: html
 [Blurb on packages]
 
 ```{r}
-#| echo: false
 #| message: false
 #| results: false
 #| output: false
@@ -23,17 +22,21 @@ format: html
 library(sdmpredictors)
 library(raster)
 library(tidyverse)
-library(fpc)
 library(MultiscaleDTM)
 ```
 
 [Blurb on importance of folder structure]
 
-Your working directory (wd) should be the folder you've downloaded from this GitHub repository where the .Rproj file is located. 
+Your working directory (wd) should be the folder you've downloaded from this GitHub repository where the .Rproj file is located. You can check this by running getwd().
+
+```{r}
+#| include: false
+
+getwd()
+```
 
 ```{r}
 wd<-getwd()
-wd
 ```
 
 You'll notice there are other subfolders so for ease, let's create paths to them too.
@@ -90,14 +93,17 @@ There are hundreds of equal-area projections to choose from but we're going to u
 #| warning: false
 #| message: false
 
-newproj<-"+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84"
-bathy_MOL<-projectRaster(bathy, crs=newproj, res=c(10000,10000))
+molproj<-"+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84"
+bathy_MOL<-projectRaster(bathy, crs=molproj, res=c(10000,10000))
 plot(bathy_MOL, main="Bathymetry (Mollweide)")
 ```
 
 You can see from the map that this is in the Mollweide projection as opposed to the WGS84 version below.
 
 ```{r}
+#| warning: false
+#| message: false
+
 plot(bathy, main="Bathymetry (WGS84)")
 ```
 
@@ -112,6 +118,17 @@ slo<-SlpAsp(bathy_MOL, w=c(3,3), unit="degrees", method="queen", metrics="slope"
 slo
 ```
 
+This raster is in Mollweide but we want to make our classification in WGS84 - this is because in marine spatial planning, WGS84 is more commonly used. 
+
+```{r}
+#| warning: false
+#| message: false
+
+wgsproj<-"+proj=longlat +datum=WGS84 +no_defs"
+slo<-projectRaster(slo, bathy, crs=wgsproj)
+
+```
+
 R is brilliant for quickly automating tasks, but it's still really important for us to 'eyeball' our data and ensure the input variables look correct. This is where expert opinion and knowing your study area is crucial. 
 
 ```{r}
@@ -121,7 +138,7 @@ plot(slo, main="Slope")
 These values and the plot look as one would expect for a global slope map, with large ridge systems identified as well as flat abyssal plains. Let's save the output. 
 
 ```{r}
-terra::writeRaster(slo, filename=(paste0(input_layers_folder, "/GEBCO2020_Slo_10km_MOL.tif")), overwrite=TRUE, format="GTiff")
+terra::writeRaster(slo, filename=(paste0(input_layers_folder, "/GEBCO2020_Slo_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
 ### Broad-scale bathymetri position index (BBPI)
@@ -137,13 +154,24 @@ bbpi
 The values look sensible. 
 
 ```{r}
+#| warning: false
+#| message: false
+
+bbpi<-projectRaster(bbpi, bathy, crs=wgsproj)
+
+```
+
+```{r}
+#| warning: false
+#| message: false
+
 plot(bbpi, main="BBPI")
 ```
 
 And so does the plot so we'll save the layer. 
 
 ```{r}
-terra::writeRaster(bbpi, filename=(paste0(input_layers_folder, "/GEBCO2020_BBPI_10km_MOL.tif")), overwrite=TRUE, format="GTiff")
+terra::writeRaster(bbpi, filename=(paste0(input_layers_folder, "/GEBCO2020_BBPI_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
 ### Fine-scale bathymetric position index (FBPI)
@@ -159,13 +187,24 @@ fbpi
 The values look sensible. 
 
 ```{r}
+#| warning: false
+#| message: false
+
+fbpi<-projectRaster(fbpi, bathy, crs=wgsproj)
+
+```
+
+```{r}
+#| warning: false
+#| message: false
+
 plot(fbpi, main="FBPI")
 ```
 
 And so does the plot so we'll save the layer. 
 
 ```{r}
-terra::writeRaster(fbpi, filename=(paste0(input_layers_folder, "/GEBCO2020_FBPI_10km_MOL.tif")), overwrite=TRUE, format="GTiff")
+terra::writeRaster(fbpi, filename=(paste0(input_layers_folder, "/GEBCO2020_FBPI_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
 ## Productivity
@@ -173,6 +212,9 @@ terra::writeRaster(fbpi, filename=(paste0(input_layers_folder, "/GEBCO2020_FBPI_
 The productivity (particulate organic carbon (POC) flux to depth) layer we're using comes from the NEMO-MEDUSA model. Authors have uploaded the netCDF version on Zenodo, [here](https://zenodo.org/record/6513616#.Yn6TGx1BzIU). However for ease, the TIFF version is in the 'InputLayers' folder of this repo. Let's read it in. 
 
 ```{r}
+#| warning: false
+#| message: false
+
 prod<-raster(paste0(input_layers_folder, "/Yool_POC_10km_WGS84.tif"))
 plot(prod, main="POC flux to depth")
 ```
@@ -200,6 +242,7 @@ We want to download the latest version (BO22) of mean temperature and salinity (
 
 ```{r}
 #| warning: false
+#| message: false
 
 temp<-load_layers("BO22_tempmean_bdmean", equalarea=FALSE)
 temp
@@ -207,6 +250,9 @@ temp
 
 
 ```{r}
+#| warning: false
+#| message: false
+
 plot(temp, main="Bottom Temperature")
 ```
 
@@ -214,6 +260,7 @@ plot(temp, main="Bottom Temperature")
 
 ```{r}
 #| warning: false
+#| message: false
 
 sal<-load_layers("BO22_salinitymean_bdmean", equalarea = FALSE)
 sal
@@ -221,6 +268,9 @@ sal
 ```
 
 ```{r}
+#| warning: false
+#| message: false
+
 plot(sal, main="Bottom Salinity")
 ```
 
