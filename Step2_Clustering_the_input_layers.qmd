@@ -1,0 +1,134 @@
+---
+title: "A guide to developing non-hierarchical habitat classifications using open-source data and software: Clustering the input layers"
+author: "Amelia E.H. Bridges et al."
+format: html
+---
+
+# HEADING
+
+[Blurb on CLARA]
+
+# Water mass structure
+
+## Trialling iterative clustering options
+
+```{r}
+input_type<-"WMS"
+```
+
+### Normalising the data 
+
+Data first need to be normalized to between 0 and 1.
+
+```{r}
+# temp
+tmean<-(cellStats(temp, stat='mean'))
+tstdev<-(cellStats(temp, stat='sd'))
+tnorm<-((temp-tmean)/(tstdev))
+tmin<-(cellStats(tnorm, stat='min'))
+tmax<-(cellStats(tnorm, stat='max'))
+tcor<-((tnorm-tmin)/(tmax-tmin))
+
+# sal
+smean<-(cellStats(sal, stat='mean'))
+sstdev<-(cellStats(sal, stat='sd'))
+snorm<-((sal-smean)/(sstdev))
+smin<-(cellStats(snorm, stat='min'))
+smax<-(cellStats(snorm, stat='max'))
+scor<- ((snorm-smin)/(smax-smin))
+
+tDF<-data.frame(rasterToPoints(tcor))%>%
+  rename(temperature=3)
+sDF <- data.frame (rasterToPoints(scor))%>%
+  rename(salinity=3)
+
+wms_DF<-data.frame(sDF$salinity, tDF$temperature) # Add all variables to new data frame and select only columns with data in to remove georeferencing
+
+```
+
+### Running & assessing the pamk() function
+
+[Blurb on iteratively testing between 2 and 40 clusters]
+
+[Blurb on ASW vs. CH index]
+
+```{r}
+
+# CLARA using ASW as indices
+clara <- pamk(wms_DF,krange=2:20,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(wms_DF, "Euclidean"),
+                  critout=TRUE)
+```
+
+The pamk() function creates a list which isn't overly helpful. However, we can extract the important bits and interpret it more easily. 
+
+```{r}
+asw<-as.data.frame(clara$crit)
+noclusters <- as.data.frame(as.numeric(c(1:20)))
+results<-cbind(noclusters, asw)%>%
+  rename(No_of_clusters=1,
+         ASW=2)
+```
+
+These are important results so let's save them in a CSV file in case you want to refer back to them. This is particularly useful when testing high numbers of clusters given the time involved. 
+
+```{r}
+write.csv(results, paste0(results_folder, "/asw_scores_", input_type, ".csv"), row.names = FALSE)
+```
+
+Visualizing the results is a great way to quickly ascertain how well the data clusters. 
+
+```{r}
+#| warning: false
+
+plot<-ggplot(data=results, aes(x=No_of_clusters, y=ASW, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(2, 20) + 
+  ggtitle(paste0("Average Silhouette Width for ", input_type, " clusters"))+
+  my_plot_theme()+
+  xlab("Number of clusters")+
+  ylab("Average Silhouette Width (ASW)")
+
+
+```
+
+We'll also save this plot at a high DPI in case you wan to use it in the future. 
+
+```{r}
+ggsave(paste0("asw_scores_", input_type, ".jpeg"), 
+       plot=last_plot(), 
+       device = "jpeg", 
+       path = results_folder, 
+       dpi=600)
+```
+
+## Running your selected cluster combination
+
+This is where you bring in expert opinion and consider the number of clusters you expect to have [BLAH BLAH].
+
+```{r}
+no_of_clusters<-8
+```
+
+```{r}
+
+# Agreed number of clusters
+clara<-pamk(wms_DF,krange=no_of_clusters,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(wms_DF, "Euclidean"),
+                  critout=TRUE)
+
+clara_wms_df <- data.frame(sDF$x, sDF$y, clara_wms$pamobject$clustering)
+
+names(clara_wms_df) <- c("x", "y", "cluster")
+coordinates(clara_wms_df) <- ~x+y
+clara_wms_Ras <- rasterize(clara_wms_df, temp)
+plot(clara_wms_Ras[[2]])
+```
+
+
+## Productivity
+
+## Topography
+
+## Biogeography 

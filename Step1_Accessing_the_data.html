@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.36">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Amelia E.H. Bridges et al.">
+
+<title>A guide to developing non-hierarchical habitat classifications using open-source data and software: Accessing the data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="Step1_Accessing_the_data_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Step1_Accessing_the_data_files/libs/quarto-html/quarto.js"></script>
+<script src="Step1_Accessing_the_data_files/libs/quarto-html/popper.min.js"></script>
+<script src="Step1_Accessing_the_data_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Step1_Accessing_the_data_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Step1_Accessing_the_data_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Step1_Accessing_the_data_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Step1_Accessing_the_data_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Step1_Accessing_the_data_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Step1_Accessing_the_data_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">A guide to developing non-hierarchical habitat classifications using open-source data and software: Accessing the data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Amelia E.H. Bridges et al. </p>
+          </div>
+  </div>
+    
+    
+  </div>
+  
+
+</header>
+
+<section id="an-introduction-to-this-document" class="level1">
+<h1>An introduction to this document</h1>
+<p>[Blurb on method, examples of use] [How to use this document]</p>
+</section>
+<section id="prepare-your-folder-structure-working-environment" class="level1">
+<h1>Prepare your folder structure &amp; working environment</h1>
+<p>[Blurb on packages]</p>
+<div class="cell">
+
+</div>
+<p>[Blurb on importance of folder structure]</p>
+<p>Your working directory (wd) should be the folder you’ve downloaded from this GitHub repository where the .Rproj file is located.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>wd<span class="ot">&lt;-</span><span class="fu">getwd</span>()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>wd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "D:/OneDrive/OneDrive - University of Plymouth/In_prep_submittted_manuscripts/Howell_etal_Global_HC/Non-hierarchical_habitat_classification"</code></pre>
+</div>
+</div>
+<p>You’ll notice there are other subfolders so for ease, let’s create paths to them too.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>input_layers_folder<span class="ot">&lt;-</span><span class="fu">paste0</span>(wd, <span class="st">"/InputLayers"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>output_layers_folder<span class="ot">&lt;-</span><span class="fu">paste0</span>(wd, <span class="st">"/OutputLayers"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>results_layers_folder<span class="ot">&lt;-</span><span class="fu">paste0</span>(wd, <span class="st">"/Results"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>my_plot_theme <span class="ot">&lt;-</span> <span class="cf">function</span>(...){</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_light</span>()<span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.line =</span> ggplot2<span class="sc">::</span><span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey50"</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis.title.y =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>, <span class="at">angle=</span><span class="dv">90</span>),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis.title.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">fill=</span><span class="cn">NA</span>, <span class="at">linewidth=</span><span class="dv">1</span>),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">plot.title =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">14</span>,<span class="at">hjust=</span><span class="fl">0.5</span>),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">legend.text.align =</span> <span class="fl">0.5</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">legend.title.align =</span> <span class="dv">0</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis.title =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">14</span>,<span class="at">vjust=</span><span class="fl">0.5</span>),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis.text.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">colour =</span> <span class="st">"black"</span>),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis.text.y =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>                                                       <span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>                   ...)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="read-in-the-data" class="level1">
+<h1>Read in the data</h1>
+<section id="topography" class="level2">
+<h2 class="anchored" data-anchor-id="topography">Topography</h2>
+<p>In <a href="https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#s0220">McQuaid et al.&nbsp;(2023)</a>, we used three topographic variables to create our ‘topography layer’ - these were slope, fine-scale bathymetric position index (FBPI) and broad-scale (BBPI). These variables are derivatives of bathymetry (i.e.&nbsp;they can be calculated from bathymetry).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bathy<span class="ot">&lt;-</span><span class="fu">raster</span>(<span class="fu">paste0</span>(input_layers_folder, <span class="st">"/GEBCO2020_Depth_10km_WGS84.tif"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You’ll notice that the rasters I’m bringing in are named in similar ways. I use a naming convention that ensures I know the source (the GEBCO 2020 grid), variable (depth), resolution (10km) and projection (WGS84), without having to open the file. When working in R, calling the object (in this case ‘bathy’) also allows us to quickly look at the details including what coordinate reference system (crs) it’s in.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>bathy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class      : RasterLayer 
+dimensions : 2161, 4320, 9335520  (nrow, ncol, ncell)
+resolution : 0.08333333, 0.08333333  (x, y)
+extent     : -180, 180, -90, 90.08333  (xmin, xmax, ymin, ymax)
+crs        : +proj=longlat +datum=WGS84 +no_defs 
+source     : GEBCO2020_Depth_10km_WGS84.tif 
+names      : GEBCO2020_Depth_10km_WGS84 
+values     : -10848, 0  (min, max)</code></pre>
+</div>
+</div>
+<p>As <em>per</em> the above, our bathymetry raster is in WGS84. To calculate the bathymetric derivatives we want, we need our bathymetry in an equal-area projection where all cells on the grid are the same size.</p>
+<p>There are hundreds of equal-area projections to choose from but we’re going to use Mollweide - <a href="https://desktop.arcgis.com/en/arcmap/latest/map/projections/mollweide.htm">this page</a> explains it’s limitations and advantages nicely. The crs for Mollweide is ‘+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84’.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>newproj<span class="ot">&lt;-</span><span class="st">"+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>bathy_MOL<span class="ot">&lt;-</span><span class="fu">projectRaster</span>(bathy, <span class="at">crs=</span>newproj, <span class="at">res=</span><span class="fu">c</span>(<span class="dv">10000</span>,<span class="dv">10000</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(bathy_MOL, <span class="at">main=</span><span class="st">"Bathymetry (Mollweide)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>You can see from the map that this is in the Mollweide projection as opposed to the WGS84 version below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(bathy, <span class="at">main=</span><span class="st">"Bathymetry (WGS84)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Now we have out bathymetry data read in and in the correct projection, we need to calculate slope, FBPI and BBPI and we do this using the <a href="https://rdrr.io/github/ailich/MultiscaleDTM/">MultiscaleDTM</a> package described in <a href="https://onlinelibrary.wiley.com/doi/full/10.1111/tgis.13067">Ilich et al.&nbsp;(2023)</a>.</p>
+<section id="slope" class="level3">
+<h3 class="anchored" data-anchor-id="slope">Slope</h3>
+<p>[Blurb on slope]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>slo<span class="ot">&lt;-</span><span class="fu">SlpAsp</span>(bathy_MOL, <span class="at">w=</span><span class="fu">c</span>(<span class="dv">3</span>,<span class="dv">3</span>), <span class="at">unit=</span><span class="st">"degrees"</span>, <span class="at">method=</span><span class="st">"queen"</span>, <span class="at">metrics=</span><span class="st">"slope"</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>slo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class      : RasterLayer 
+dimensions : 1802, 3618, 6519636  (nrow, ncol, ncell)
+resolution : 10000, 10000  (x, y)
+extent     : -18089740, 18090260, -9073049, 8946951  (xmin, xmax, ymin, ymax)
+crs        : +proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs 
+source     : memory
+names      : slope 
+values     : 0, 18.44445  (min, max)</code></pre>
+</div>
+</div>
+<p>R is brilliant for quickly automating tasks, but it’s still really important for us to ‘eyeball’ our data and ensure the input variables look correct. This is where expert opinion and knowing your study area is crucial.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(slo, <span class="at">main=</span><span class="st">"Slope"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>These values and the plot look as one would expect for a global slope map, with large ridge systems identified as well as flat abyssal plains. Let’s save the output.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">writeRaster</span>(slo, <span class="at">filename=</span>(<span class="fu">paste0</span>(input_layers_folder, <span class="st">"/GEBCO2020_Slo_10km_MOL.tif"</span>)), <span class="at">overwrite=</span><span class="cn">TRUE</span>, <span class="at">format=</span><span class="st">"GTiff"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="broad-scale-bathymetri-position-index-bbpi" class="level3">
+<h3 class="anchored" data-anchor-id="broad-scale-bathymetri-position-index-bbpi">Broad-scale bathymetri position index (BBPI)</h3>
+<p>[Blurb on BBPI and radii]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>specs<span class="ot">&lt;-</span><span class="fu">annulus_window</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">10</span>), <span class="st">"cell"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>bbpi<span class="ot">&lt;-</span>MultiscaleDTM<span class="sc">::</span><span class="fu">BPI</span>(bathy_MOL, <span class="at">w =</span> specs, <span class="at">unit =</span> <span class="st">"cell"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>bbpi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class      : RasterLayer 
+dimensions : 1802, 3618, 6519636  (nrow, ncol, ncell)
+resolution : 10000, 10000  (x, y)
+extent     : -18089740, 18090260, -9073049, 8946951  (xmin, xmax, ymin, ymax)
+crs        : +proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs 
+source     : memory
+names      : bpi 
+values     : -4455.167, 5074.362  (min, max)</code></pre>
+</div>
+</div>
+<p>The values look sensible.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(bbpi, <span class="at">main=</span><span class="st">"BBPI"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>And so does the plot so we’ll save the layer.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">writeRaster</span>(bbpi, <span class="at">filename=</span>(<span class="fu">paste0</span>(input_layers_folder, <span class="st">"/GEBCO2020_BBPI_10km_MOL.tif"</span>)), <span class="at">overwrite=</span><span class="cn">TRUE</span>, <span class="at">format=</span><span class="st">"GTiff"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="fine-scale-bathymetric-position-index-fbpi" class="level3">
+<h3 class="anchored" data-anchor-id="fine-scale-bathymetric-position-index-fbpi">Fine-scale bathymetric position index (FBPI)</h3>
+<p>[Blurb on FBPI and why we chose these radii]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>specs<span class="ot">&lt;-</span><span class="fu">annulus_window</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="st">"cell"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fbpi<span class="ot">&lt;-</span>MultiscaleDTM<span class="sc">::</span><span class="fu">BPI</span>(bathy_MOL, <span class="at">w =</span> specs, <span class="at">unit =</span> <span class="st">"cell"</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>fbpi</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class      : RasterLayer 
+dimensions : 1802, 3618, 6519636  (nrow, ncol, ncell)
+resolution : 10000, 10000  (x, y)
+extent     : -18089740, 18090260, -9073049, 8946951  (xmin, xmax, ymin, ymax)
+crs        : +proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs 
+source     : memory
+names      : bpi 
+values     : -3248.836, 3691.62  (min, max)</code></pre>
+</div>
+</div>
+<p>The values look sensible.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fbpi, <span class="at">main=</span><span class="st">"FBPI"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>And so does the plot so we’ll save the layer.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>terra<span class="sc">::</span><span class="fu">writeRaster</span>(fbpi, <span class="at">filename=</span>(<span class="fu">paste0</span>(input_layers_folder, <span class="st">"/GEBCO2020_FBPI_10km_MOL.tif"</span>)), <span class="at">overwrite=</span><span class="cn">TRUE</span>, <span class="at">format=</span><span class="st">"GTiff"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="productivity" class="level2">
+<h2 class="anchored" data-anchor-id="productivity">Productivity</h2>
+<p>The productivity (particulate organic carbon (POC) flux to depth) layer we’re using comes from the NEMO-MEDUSA model. Authors have uploaded the netCDF version on Zenodo, <a href="https://zenodo.org/record/6513616#.Yn6TGx1BzIU">here</a>. However for ease, the TIFF version is in the ‘InputLayers’ folder of this repo. Let’s read it in.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>prod<span class="ot">&lt;-</span><span class="fu">raster</span>(<span class="fu">paste0</span>(input_layers_folder, <span class="st">"/Yool_POC_10km_WGS84.tif"</span>))</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(prod, <span class="at">main=</span><span class="st">"POC flux to depth"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Again, here you can see that (as expected) continental shelves have higher productivity and you can see the slight increases in productivity in temperate latitudes.</p>
+</section>
+<section id="water-mass-structure" class="level2">
+<h2 class="anchored" data-anchor-id="water-mass-structure">Water mass structure</h2>
+<p>[Blurb on data repositories, example links etc.]</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>sdm_datasets<span class="ot">&lt;-</span>sdmpredictors<span class="sc">::</span><span class="fu">list_datasets</span>(<span class="at">terrestrial =</span> <span class="cn">FALSE</span>, <span class="at">marine =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>layers<span class="ot">&lt;-</span>sdmpredictors<span class="sc">::</span><span class="fu">list_layers</span>(sdm_datasets)<span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(layer_url, <span class="st">'Present.Benthic.Mean.Depth'</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(primary_spatial_resolution<span class="sc">==</span><span class="st">"0.25 arcdegree"</span>)<span class="sc">%&gt;%</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(version<span class="sc">==</span><span class="dv">22</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>These are the 66 layers available from Bio-ORACLE (version 2.2) for which the values refer to present benthic conditions taken at the mean depth of each cell at a 0.25 arc degree resolution.</p>
+<p>We want to download the latest version (BO22) of mean temperature and salinity (tempmean/salinitymean) for the mean bottom depth (bdmean).</p>
+<section id="temperature" class="level3">
+<h3 class="anchored" data-anchor-id="temperature">Temperature</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">&lt;-</span><span class="fu">load_layers</span>(<span class="st">"BO22_tempmean_bdmean"</span>, <span class="at">equalarea=</span><span class="cn">FALSE</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>temp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class      : RasterStack 
+dimensions : 2160, 4320, 9331200, 1  (nrow, ncol, ncell, nlayers)
+resolution : 0.08333333, 0.08333333  (x, y)
+extent     : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)
+crs        : +proj=longlat +datum=WGS84 +no_defs 
+names      : BO22_tempmean_bdmean 
+min values :            -1.839894 
+max values :              31.4447 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(temp, <span class="at">main=</span><span class="st">"Bottom Temperature"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="salinity" class="level3">
+<h3 class="anchored" data-anchor-id="salinity">Salinity</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>sal<span class="ot">&lt;-</span><span class="fu">load_layers</span>(<span class="st">"BO22_salinitymean_bdmean"</span>, <span class="at">equalarea =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>sal</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>class      : RasterStack 
+dimensions : 2160, 4320, 9331200, 1  (nrow, ncol, ncell, nlayers)
+resolution : 0.08333333, 0.08333333  (x, y)
+extent     : -180, 180, -90, 90  (xmin, xmax, ymin, ymax)
+crs        : +proj=longlat +datum=WGS84 +no_defs 
+names      : BO22_salinitymean_bdmean 
+min values :                 4.990345 
+max values :                 40.75557 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(sal, <span class="at">main=</span><span class="st">"Bottom Salinity"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Step1_Accessing_the_data_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="biogeography" class="level2">
+<h2 class="anchored" data-anchor-id="biogeography">Biogeography</h2>
+<p>The final layer layer we need is biogeography to differentiate between two ‘unconnected’ areas with similar conditions (e.g.&nbsp;the Arctic and the Antarctic). We’ll come back to this once we’ve clustered out water mass structure layer.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
