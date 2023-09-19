@@ -30,7 +30,7 @@ library(MultiscaleDTM)
 Your working directory (wd) should be the folder you've downloaded from this GitHub repository where the .Rproj file is located. You can check this by running getwd().
 
 ```{r}
-#| include: false
+#| results: hide
 
 getwd()
 ```
