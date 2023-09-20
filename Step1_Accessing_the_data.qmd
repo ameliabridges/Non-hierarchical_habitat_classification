@@ -276,5 +276,13 @@ plot(sal, main="Bottom Salinity")
 
 ## Biogeography
 
-The final layer layer we need is biogeography to differentiate between two 'unconnected' areas with similar conditions (e.g. the Arctic and the Antarctic). We'll come back to this once we've clustered out water mass structure layer. 
+[PUT IN TEXT FROM PAPER]
 
+The final layer we need is biogeography to differentiate between two 'unconnected' areas with similar conditions (e.g. the Arctic and the Antarctic). 
+
+For most workshop attendees, the aim is to develop regional habitat classifications and therefore biogeography is not necessarily required. However, if your region of interest straddles >1 biogeographic region, you will want to create a biogeography input layer. 
+
+There are plenty of published biogeographies at both regional and global scales. Most of these are heaily influenced by water mass structure. However, their water mass structure boundaries will not align exactly with yours. Therefore, if you import a published biography directly onto your classification, you will end up with high numbers of habitat classes around the 'joins' which might throw off your analysis. 
+
+To get around this in the McQuaid et al. (2023) paper, we followed the water mass boundaries from our clustered WMS input layer. 
+In the McQuaid et al. (2023) paper, 

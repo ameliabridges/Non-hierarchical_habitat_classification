@@ -27,7 +27,7 @@ input_type<-"topo" # change based on whatever variable/group you're clustering
 
 ### a. Normalising the data 
 
-Data first need to be normalized to between 0 and 1. Note that becasue we're working at teh global scale, this will take a few minutes. 
+Data first need to be normalized to between 0 and 1. Note that because we're working at the global scale, this will take a few minutes. 
 
 ```{r}
 # slo
@@ -62,10 +62,178 @@ DF2<-data.frame (rasterToPoints(cor2))%>%
 DF3<-data.frame (rasterToPoints(cor3))%>%
   rename(fbpi=3) # change based on whatever variable/group you're clustering
 
-# the following merges the values by their original coordinates to make sure each cell recieves the correct slope, bbpi and fbpi values
-a<-merge(DF2, DF3, by=c("x","y"))
-b<-merge(a, DF1, by=c("x","y"))
-DF <- na.omit(data.frame(b$bbpi, b$fbpi, b$slope)) 
+DF<-DF1%>%
+  full_join(DF2, by=c("x","y"))%>%
+  full_join(DF3, by=c("x","y"))%>%
+  drop_na()%>%
+  dplyr::select(x, y, bbpi, fbpi, slope)
+
+DF_shuffle1= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle2= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle3= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle4= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle5= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle6= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle7= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle8= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle9= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+DF_shuffle10= DF[sample(1:nrow(DF)), ]%>%
+  select(bbpi, fbpi, slope)
+
+
+```
+
+### b. Running & assessing the pamk() function
+
+[Blurb on iteratively testing between 2 and 40 clusters]
+
+[Blurb on ASW vs. CH index]
+
+The output from the pamk() function gives you the number of clusters and the score. 
+
+```{r}
+
+clara <- pamk(DF_shuffle10,krange=2:10,criterion="asw", usepam=FALSE, # change depending on how many iterations you want to run 
+                  scaling=FALSE, diss=inherits(DF_shuffle10, "Euclidean"),
+                  critout=TRUE)
+```
+
+The pamk() function creates a list which isn't overly helpful. However, we can extract the important bits and interpret it more easily. 
+
+```{r}
+asw<-as.data.frame(clara$crit)
+noclusters <- as.data.frame(as.numeric(c(1:13))) # change depending on how many iterations you ran 
+results<-cbind(noclusters, asw)%>%
+  rename(No_of_clusters=1,
+         ASW=2)
+
+```
+
+These are important results so let's save them in a CSV file in case you want to refer back to them. This is particularly useful when testing high numbers of clusters given the time involved. 
+
+```{r}
+write.csv(results, paste0(results_folder, "/asw_scores_", input_type, ".csv"), row.names = FALSE)
+```
+
+Visualizing the results is a great way to quickly ascertain how well the data clusters. 
+
+```{r}
+#| warning: false
+
+plot<-ggplot(data=results, aes(x=No_of_clusters, y=ASW, group=1)) +
+  geom_line() +
+  geom_point() +
+  xlim(2, 13) + # change depending on how many iterations you ran
+  ggtitle(paste0("Average Silhouette Width for ", input_type, " clusters"))+
+  my_plot_theme()+
+  xlab("Number of clusters")+
+  ylab("Average Silhouette Width (ASW)")
+
+
+```
+
+We'll also save this plot at a high DPI in case you wan to use it in the future. 
+
+```{r}
+#| include: false
+
+ggsave(paste0("asw_scores_", input_type, ".jpeg"), 
+       plot=last_plot(), 
+       device = "jpeg", 
+       path = results_folder, 
+       dpi=600)
+```
+
+## 2. Running your selected cluster combination
+
+This is where you bring in expert opinion and consider the number of clusters you expect to have. For varying statistical reasons, 2 clusters often scores far higher than any other combination when assessing the cluster structure using ASW. However, there are reasonably few variables where 2 classes would appropriately capture biologically relevant variation. 
+
+If we exclude 2 clusters, the next best clustering structure is with XX clusters for our topography layer.
+
+```{r}
+no_of_clusters<-4 # insert your selected number of clusters here
+```
+
+Now we run the pamk() function but this time, we only run it on the selected number of clusters, not iteratively. 
+
+```{r}
+
+clara<-pamk(DF,krange=no_of_clusters,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(DF, "Euclidean"),
+                  critout=TRUE)
+```
+
+And then convert it into a raster. This step takes a while given we're working across a large grid. 
+
+```{r}
+clara_df <- data.frame(DF1$x, DF1$y, clara$pamobject$clustering)%>%
+  rename("x"="DF1.x",
+         "y"="DF1.y",
+         "cluster"="clara.pamobject.clustering")
+
+coordinates(clara_df)<-~x+y
+clara_Ras<-terra::rasterize(clara_df, slo)
+```
+
+```{r}
+#| warning: false
+#| message: false
+
+topo<-clara_Ras[[2]]
+
+plot(topo, main="Clustered Topography")
+```
+
+This is our clustered input layer for water mass structure so let's save it. 
+
+```{r}
+terra::writeRaster(topo, filename=(paste0(input_layers_folder, "/Topo_4clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+```
+
+# Productivity
+
+## 1. Trialling iterative clustering options
+
+```{r}
+input_type<-"prod" # change based on whatever variable/group you're clustering 
+```
+
+### a. Normalising the data 
+
+Data first need to be normalized to between 0 and 1. Note that becasue we're working at teh global scale, this will take a few minutes. 
+
+```{r}
+# prod
+mean1<-(cellStats(prod, stat='mean'))
+stdev1<-(cellStats(prod, stat='sd'))
+norm1<-((prod-mean1)/(stdev1))
+min1<-(cellStats(norm1, stat='min'))
+max1<-(cellStats(norm1, stat='max'))
+cor1<-((norm1-min1)/(max1-min1))
+
+# combine dfs
+DF1<-data.frame(rasterToPoints(cor1))%>%
+  rename(productivity=3) # change based on whatever variable/group you're clustering
+
+DF<-data.frame(DF1$productivity)
 
 ```
 
@@ -176,7 +344,6 @@ This is our clustered input layer for water mass structure so let's save it.
 terra::writeRaster(topo, filename=(paste0(input_layers_folder, "/Topo_5clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
-# Productivity
 
 # Water mass structure
 
@@ -212,10 +379,24 @@ cor2<- ((norm2-min2)/(max2-min2))
 # combine dfs
 DF1<-data.frame(rasterToPoints(cor1))%>%
   rename(temperature=3) # change based on whatever variable/group you're clustering
-DF2 <- data.frame (rasterToPoints(cor2))%>%
+DF2<-data.frame (rasterToPoints(cor2))%>%
   rename(salinity=3) # change based on whatever variable/group you're clustering
-DF<-data.frame(DF2$salinity, DF1$temperature) 
 
+DF<-DF1%>%
+  full_join(DF2, by=c("x","y"))%>%
+  drop_na()%>%
+  dplyr::select(temperature, salinity)
+
+DF_shuffle1= DF[sample(1:nrow(DF)), ]%>%
+  select(temperature, salinity)
+DF_shuffle2= DF[sample(1:nrow(DF)), ]%>%
+  select(temperature, salinity)
+DF_shuffle3= DF[sample(1:nrow(DF)), ]%>%
+  select(temperature, salinity)
+DF_shuffle4= DF[sample(1:nrow(DF)), ]%>%
+  select(temperature, salinity)
+DF_shuffle5= DF[sample(1:nrow(DF)), ]%>%
+  select(temperature, salinity)
 ```
 
 ### Running & assessing the pamk() function
@@ -229,8 +410,8 @@ The output from the pamk() function gives you the number of clusters and the sco
 ```{r}
 
 # CLARA using ASW as indices
-clara <- pamk(DF,krange=2:13,criterion="asw", usepam=FALSE, 
-                  scaling=FALSE, diss=inherits(DF, "Euclidean"),
+clara <- pamk(DF_shuffle4,krange=2:15,criterion="asw", usepam=FALSE, 
+                  scaling=FALSE, diss=inherits(DF_shuffle4, "Euclidean"),
                   critout=TRUE)
 ```
 
