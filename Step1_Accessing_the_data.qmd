@@ -162,7 +162,7 @@ slo<-raster(slo) # we convert into a SpatRaster format for the crop() function
 terra::writeRaster(slo, filename=(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_Slo_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
-### Broad-scale bathymetri position index (BBPI)
+### Broad-scale bathymetric position index (BBPI)
 
 [Blurb on BBPI and radii]
 
@@ -322,7 +322,7 @@ plot(sal, main="Bottom Salinity")
 ```{r}
 sal<-terra::rast(sal) # we convert into a SpatRaster format for the crop() function
 sal<-crop(sal, gog_shp)
-plot(temp, main="Bottom Salinity: Gulf of Guinea")
+plot(sal, main="Bottom Salinity: Gulf of Guinea")
 ```
 
 ## Biogeography
