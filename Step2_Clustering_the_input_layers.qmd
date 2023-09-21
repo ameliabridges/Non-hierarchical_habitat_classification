@@ -68,35 +68,39 @@ DF<-DF1%>%
   drop_na()%>%
   dplyr::select(x, y, bbpi, fbpi, slope)
 
-DF_shuffle1= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Standardize the data (optional but recommended for K-Means)
+data_for_clustering <- DF
 
-DF_shuffle2= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Assuming your dataframe is called 'df' and you have already prepared your data
 
-DF_shuffle3= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Define a range of cluster numbers
+cluster_range <- 2:10
 
-DF_shuffle4= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Create an empty list to store the results for each number of clusters
+cluster_results <- list()
 
-DF_shuffle5= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Iterate through the cluster range
+for (k in cluster_range) {
+  # Perform K-Means clustering
+  kmeans_result <- kmeans(data_for_clustering, centers = k, nstart = 20)
+  
+  # Store the clustering result
+  cluster_results[[as.character(k)]] <- kmeans_result
+}
 
-DF_shuffle6= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Evaluate the quality of each clustering result (e.g., using the elbow method)
+# Here, we calculate the total within-cluster sum of squares (wss) for each k
+wss_values <- sapply(cluster_results, function(kmeans_result) kmeans_result$tot.withinss)
 
-DF_shuffle7= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Plot the elbow curve to help determine the optimal number of clusters
+plot(cluster_range, wss_values, type = "b", 
+     xlab = "Number of Clusters", ylab = "Within-cluster Sum of Squares (WSS)",
+     main = "Elbow Method for Optimal Number of Clusters")
 
-DF_shuffle8= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
-
-DF_shuffle9= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
-
-DF_shuffle10= DF[sample(1:nrow(DF)), ]%>%
-  select(bbpi, fbpi, slope)
+# Add points and text to the plot to highlight the "elbow" point
+elbow_point <- kneeLocator(cluster_range, wss_values)
+points(elbow_point$x, elbow_point$y, col = "red", pch = 19)
+text(elbow_point$x, elbow_point$y, labels = elbow_point$x, pos = 2, col = "red")
 
 
 ```

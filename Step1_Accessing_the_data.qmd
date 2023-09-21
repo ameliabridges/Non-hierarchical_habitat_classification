@@ -23,6 +23,7 @@ library(sdmpredictors)
 library(raster)
 library(tidyverse)
 library(MultiscaleDTM)
+library(terra)
 ```
 
 [Blurb on importance of folder structure]
@@ -42,7 +43,9 @@ wd<-getwd()
 You'll notice there are other subfolders so for ease, let's create paths to them too.
 
 ```{r}
-input_layers_folder<-paste0(wd, "/InputLayers")
+raw_input_layers_folder<-paste0(wd, "/InputLayers/Unprocessed")
+
+clust_input_layers_folder<-paste0(wd, "/InputLayers")
 
 output_layers_folder<-paste0(wd, "/OutputLayers")
 
@@ -76,7 +79,7 @@ my_plot_theme <- function(...){
 In [McQuaid et al. (2023)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#s0220), we used three topographic variables to create our 'topography layer' - these were slope, fine-scale bathymetric position index (FBPI) and broad-scale (BBPI). These variables are derivatives of bathymetry (i.e. they can be calculated from bathymetry).
 
 ```{r}
-bathy<-raster(paste0(input_layers_folder, "/GEBCO2020_Depth_10km_WGS84.tif"))
+bathy<-raster(paste0(raw_input_layers_folder, "/GEBCO2020_Depth_10km_WGS84.tif"))
 ```
 
 You'll notice that the rasters I'm bringing in are named in similar ways. I use a naming convention that ensures I know the source (the GEBCO 2020 grid), variable (depth), resolution (10km) and projection (WGS84), without having to open the file. When working in R, calling the object (in this case 'bathy') also allows us to quickly look at the details including what coordinate reference system (crs) it's in. 
@@ -87,7 +90,7 @@ bathy
 
 As *per* the above, our bathymetry raster is in WGS84. To calculate the bathymetric derivatives we want, we need our bathymetry in an equal-area projection where all cells on the grid are the same size.
 
-There are hundreds of equal-area projections to choose from but we're going to use Mollweide - [this page](https://desktop.arcgis.com/en/arcmap/latest/map/projections/mollweide.htm) explains it's limitations and advantages nicely. The crs for Mollweide is '+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84'.
+There are hundreds of equal-area projections to choose from but we're going to use Mollweide - [this page](https://desktop.arcgis.com/en/arcmap/latest/map/projections/mollweide.htm) explains it's limitations and advantages nicely. The proj4string for Mollweide is '+proj=moll +lon_0=0 +x_0=0 +y_0=0 +datum=WGS84'.
 
 ```{r}
 #| warning: false
@@ -135,10 +138,28 @@ R is brilliant for quickly automating tasks, but it's still really important for
 plot(slo, main="Slope")
 ```
 
-These values and the plot look as one would expect for a global slope map, with large ridge systems identified as well as flat abyssal plains. Let's save the output. 
+These values and the plot look as one would expect for a global slope map, with large ridge systems identified as well as flat abyssal plains.  
+
+Given the aim of this workshop is to provide skills in developing **regional** habitat classifications, we're going to clip our rasters and work in the Gulf of Guinea. If we plot this clip, we see our slope values for our region of interest. 
 
 ```{r}
-terra::writeRaster(slo, filename=(paste0(input_layers_folder, "/GEBCO2020_Slo_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+gog_shp<-terra::vect(paste0(clust_input_layers_folder, "/Gulf_of_Guinea.shp"))
+slo<-terra::rast(slo) # we convert into a SpatRaster format for the crop() function
+slo<-crop(slo, gog_shp)
+```
+
+Note, whilst I made the Gulf of Guinea shapefile, there are plenty of R packages that contain national shapefiles.
+
+```{r}
+
+plot(slo, main="Slope: Gulf of Guinea")
+```
+
+Let's save the output.
+
+```{r}
+slo<-raster(slo) # we convert into a SpatRaster format for the crop() function
+terra::writeRaster(slo, filename=(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_Slo_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
 ### Broad-scale bathymetri position index (BBPI)
@@ -158,6 +179,8 @@ The values look sensible.
 #| message: false
 
 bbpi<-projectRaster(bbpi, bathy, crs=wgsproj)
+bbpi<-terra::rast(bbpi) # we convert into a SpatRaster format for the crop() function
+bbpi<-crop(bbpi, gog_shp)
 
 ```
 
@@ -165,13 +188,14 @@ bbpi<-projectRaster(bbpi, bathy, crs=wgsproj)
 #| warning: false
 #| message: false
 
-plot(bbpi, main="BBPI")
+plot(bbpi, main="BBPI: Gulf of Guinea")
 ```
 
 And so does the plot so we'll save the layer. 
 
 ```{r}
-terra::writeRaster(bbpi, filename=(paste0(input_layers_folder, "/GEBCO2020_BBPI_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+bbpi<-raster(bbpi) # 
+terra::writeRaster(bbpi, filename=(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_BBPI_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
 ### Fine-scale bathymetric position index (FBPI)
@@ -191,6 +215,8 @@ The values look sensible.
 #| message: false
 
 fbpi<-projectRaster(fbpi, bathy, crs=wgsproj)
+fbpi<-terra::rast(fbpi) # we convert into a SpatRaster format for the crop() function
+fbpi<-crop(fbpi, gog_shp)
 
 ```
 
@@ -198,13 +224,14 @@ fbpi<-projectRaster(fbpi, bathy, crs=wgsproj)
 #| warning: false
 #| message: false
 
-plot(fbpi, main="FBPI")
+plot(fbpi, main="FBPI: Gulf of Guinea")
 ```
 
 And so does the plot so we'll save the layer. 
 
 ```{r}
-terra::writeRaster(fbpi, filename=(paste0(input_layers_folder, "/GEBCO2020_FBPI_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+fbpi<-raster(fbpi) # 
+terra::writeRaster(fbpi, filename=(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_FBPI_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
 ## Productivity
@@ -215,11 +242,24 @@ The productivity (particulate organic carbon (POC) flux to depth) layer we're us
 #| warning: false
 #| message: false
 
-prod<-raster(paste0(input_layers_folder, "/Yool_POC_10km_WGS84.tif"))
+prod<-raster(paste0(raw_input_layers_folder, "/Yool_POC_10km_WGS84.tif"))
 plot(prod, main="POC flux to depth")
 ```
 
 Again, here you can see that (as expected) continental shelves have higher productivity and you can see the slight increases in productivity in temperate latitudes.
+
+```{r}
+prod<-terra::rast(prod) # we convert into a SpatRaster format for the crop() function
+prod<-crop(prod, gog_shp)
+plot(prod, main="POC flux to depth: Gulf of Guinea")
+```
+
+
+```{r}
+prod<-raster(prod)
+terra::writeRaster(prod, filename=(paste0(raw_input_layers_folder, "/Yool_GoG_POC_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+```
+
 
 ## Water mass structure
 
@@ -248,12 +288,17 @@ temp<-load_layers("BO22_tempmean_bdmean", equalarea=FALSE)
 temp
 ```
 
-
 ```{r}
 #| warning: false
 #| message: false
 
 plot(temp, main="Bottom Temperature")
+```
+
+```{r}
+temp<-terra::rast(temp) # we convert into a SpatRaster format for the crop() function
+temp<-crop(temp, gog_shp)
+plot(temp, main="Bottom Temperature: Gulf of Guinea")
 ```
 
 ### Salinity
@@ -274,6 +319,12 @@ sal
 plot(sal, main="Bottom Salinity")
 ```
 
+```{r}
+sal<-terra::rast(sal) # we convert into a SpatRaster format for the crop() function
+sal<-crop(sal, gog_shp)
+plot(temp, main="Bottom Salinity: Gulf of Guinea")
+```
+
 ## Biogeography
 
 [PUT IN TEXT FROM PAPER]
@@ -286,3 +337,7 @@ There are plenty of published biogeographies at both regional and global scales.
 
 To get around this in the McQuaid et al. (2023) paper, we followed the water mass boundaries from our clustered WMS input layer. 
 In the McQuaid et al. (2023) paper, 
+
+
+
+
