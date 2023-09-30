@@ -280,7 +280,6 @@ prod<-raster(prod)
 terra::writeRaster(prod, filename=(paste0(raw_input_layers_folder, "/Yool_GoG_POC_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
-
 ## Water mass structure
 
 Some habitat classifications use depth in their models to distinguish between classes (habitats). However, depth is not the biologically relevant variable - it's often a succinct way of summarizing water mass structure. Whilst this is suitable in some circumstances the depth that different water masses are found is regionally dependent, and therefore a one size fits all approach (e.g. "there's a difference in communities above and below 300 m") does not work. 
@@ -334,6 +333,11 @@ temp<-crop(temp, gog_shp)
 plot(temp, main="Bottom Temperature: Gulf of Guinea")
 ```
 
+```{r write-temp}
+temp<-raster(temp)
+terra::writeRaster(temp, filename=(paste0(raw_input_layers_folder, "/BO_GoG_Temp_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+```
+
 ### Salinity
 
 ```{r download-sal}
@@ -358,6 +362,11 @@ sal<-crop(sal, gog_shp)
 plot(sal, main="Bottom Salinity: Gulf of Guinea")
 ```
 
+```{r write-sal}
+sal<-raster(sal)
+terra::writeRaster(sal, filename=(paste0(raw_input_layers_folder, "/BO_GoG_Sal_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+```
+
 ## Biogeography
 
 The final layer we need is biogeography to differentiate between two 'unconnected' areas with similar conditions (e.g. the Arctic and the Antarctic). 
@@ -367,7 +376,3 @@ The datasets we're using in this demonstrations are low-resolution, global layer
 However, were you to be working at a finer scale (and crucially with high-resolution data), you may want to consider employing a biogeography to differentiate between regions. There are plenty of published biogeographies at varying scales. Most of these are heavily influenced by water mass structure. However, the water mass structure boundaries used to develop other biogeographies will not align exactly with your water mass structure boundaries. This mismatch means that were you to import a published biography directly onto your classification, you will end up with high numbers of habitat classes around the 'joins' which might throw off your analysis. 
 
 To get around this in the McQuaid *et al.* (2023) paper, we followed the water mass boundaries from our clustered water mass structure input layer (you'll make this in the step 2 script). For full details on how to develop a biogeography layer from a water mass structure input, please see the [McQuaid *et al.* (2023) paper](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub). 
-
-
-
-
