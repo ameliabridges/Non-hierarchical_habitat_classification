@@ -12,7 +12,6 @@ format: html
 #| output: false
 #| warning: false
 
-library(fpc)
 library(raster)
 library(tidyverse)
 library(terra)
@@ -29,7 +28,7 @@ my_plot_theme <- function(...){
     ggplot2::theme(axis.line = ggplot2::element_line(colour = "grey50"),
                    axis.title.y = ggplot2::element_text(face="bold", angle=90),
                    axis.title.x = ggplot2::element_text(face="bold"),
-                   panel.border = element_rect(colour = "black", fill=NA, linewidth=1),
+                   panel.border = element_rect(colour = "black", fill=NA),
                    plot.title = ggplot2::element_text(size=14,hjust=0.5),
                    legend.text.align = 0.5,
                    legend.title.align = 0,
@@ -42,7 +41,7 @@ my_plot_theme <- function(...){
 }
 ```
 
-In the event that you've closed your R & have lost the objects in the environment since running step 2, read in your clustered rasters.
+For this step, we want you to read in the clustered files rather than use the ones in your current R environment. 
 
 ```{r read-step-2-data}
 topo<-raster(paste0(clust_input_layers_folder, "/Topography_4clusters_10km_WGS84.tif"))
@@ -68,11 +67,11 @@ Firstly, we convert the rasters for each clustered variable into a table and com
 
 ```{r combine-dfs}
 topo_xyz<-as.data.frame(rasterToPoints(topo))%>%
-  rename("topo_class"="layer")
+  rename("topo_class"="Topography_4clusters_10km_WGS84")
 prod_xyz<-as.data.frame(rasterToPoints(prod))%>%
-  rename("prod_class"="layer")
+  rename("prod_class"="Productivity_4clusters_10km_WGS84")
 wms_xyz<-as.data.frame(rasterToPoints(wms))%>%
-  rename("wms_class"="layer")
+  rename("wms_class"="WaterMassStructure_3clusters_10km_WGS84")
 
 # combine into on xyz1z2z3 etc.
 comb_xyz<-topo_xyz%>%

@@ -6,19 +6,25 @@ format: html
 
 # An introduction to this document 
 
-This document was developed as part of a pipeline to assist delegates of the 'Habitat Conservation and Marine Spatial Planning' workshop at the Deep Ocean Collective Solution Accelerator Meeting (Scripps Institution of Oceanography 2-5th October 2023) in developing regional benthic habitat classifications. The pipeline mirrors that used in [McQuaid et al. (2023)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub).
+This series of documents were developed as part of a pipeline to assist delegates of the 'Habitat Conservation and Marine Spatial Planning' workshop at the Deep Ocean Collective Solution Accelerator Meeting (Scripps Institution of Oceanography 2-5th October 2023) in developing regional benthic habitat classifications. The pipeline mirrors that used in [McQuaid et al. (2023)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub).
 
-The [repository](XXX) is designed to be downloaded as a zip folder and for the scripts to be run sequentially (steps 1 to 3) in the same R Studio session. This document is *not* designed to provide a thorough background in the theory of non-hierarchical habitat classification, nor the variable selection process. For this, we recommend reading [Howell (2010)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#bb0400) or the abovementioned McQuaid *et al.* (2023).
+The [repository](https://github.com/ameliabridges/Non-hierarchical_habitat_classification) is designed to be downloaded as a zip folder and for the scripts to be run sequentially (steps 1 to 3) in the same R Studio session. This document is *not* designed to provide a thorough background in the theory of non-hierarchical habitat classification, nor the variable selection process. For this, we recommend reading [Howell (2010)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#bb0400) or the abovementioned McQuaid *et al.* (2023).
 
 Should you notice any issues with the code or have any questions, please contact Dr Amelia Bridges at the University of Plymouth [amelia.bridges@plymouth.ac.uk](amelia.bridges@plymouth.ac.uk).
 
 # Prepare your folder structure & working environment
+
+You will need the following packages for this script to work. If you have already installed them, you can run the library() function to call them. If you have not installed them before, you need to run the install.packages() function.
+
+If you're unsure, call them and if they throw an error then you know they're not installed. 
 
 ```{r packages}
 #| message: false
 #| results: false
 #| output: false
 #| warning: false
+
+# install.packages("sdmpredictors", "raster", "tidyverse", "MultiscaleDTM", "terra") # add/remove packages as required
 
 library(sdmpredictors)
 library(raster)
@@ -51,8 +57,10 @@ raw_input_layers_folder<-paste0(wd, "/InputLayers/Unprocessed")
 clust_input_layers_folder<-paste0(wd, "/InputLayers")
 
 output_layers_folder<-paste0(wd, "/OutputLayers")
+dir.create(output_layers_folder) # this makes the folder as empty folders won't be listed in the Git repo
 
 results_folder<-paste0(wd, "/Results")
+dir.create(results_folder) 
 ```
 
 ```{r ggtheme}
@@ -63,7 +71,7 @@ my_plot_theme <- function(...){
     ggplot2::theme(axis.line = ggplot2::element_line(colour = "grey50"),
                    axis.title.y = ggplot2::element_text(face="bold", angle=90),
                    axis.title.x = ggplot2::element_text(face="bold"),
-                   panel.border = element_rect(colour = "black", fill=NA, linewidth=1),
+                   panel.border = element_rect(colour = "black", fill=NA),
                    plot.title = ggplot2::element_text(size=14,hjust=0.5),
                    legend.text.align = 0.5,
                    legend.title.align = 0,

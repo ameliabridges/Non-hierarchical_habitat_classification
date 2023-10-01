@@ -6,11 +6,17 @@ format: html
 
 # Prepare your working environment
 
+You will need the following packages for this script to work. If you have already installed them, you can run the library() function to call them. If you have not installed them before, you need to run the install.packages() function.
+
+If you're unsure, call them and if they throw an error then you know they're not installed (if you followed step 1, raster, tidyverse and terra will all be installed).
+
 ```{r working-env}
 #| message: false
 #| results: false
 #| output: false
 #| warning: false
+
+# install.packages("fpc")
 
 library(fpc)
 library(raster)
@@ -29,7 +35,7 @@ my_plot_theme <- function(...){
     ggplot2::theme(axis.line = ggplot2::element_line(colour = "grey50"),
                    axis.title.y = ggplot2::element_text(face="bold", angle=90),
                    axis.title.x = ggplot2::element_text(face="bold"),
-                   panel.border = element_rect(colour = "black", fill=NA, linewidth=1),
+                   panel.border = element_rect(colour = "black", fill=NA),
                    plot.title = ggplot2::element_text(size=14,hjust=0.5),
                    legend.text.align = 0.5,
                    legend.title.align = 0,
@@ -42,15 +48,15 @@ my_plot_theme <- function(...){
 }
 ```
 
-In the event that you've closed your R & have lost the objects in the environment since running step 1, read in your rasters.
+In the event that you've closed your R & have lost the objects in the environment since running step 1, uncomment out these lines and read in your rasters. If you're continuing on from step 1 in the same R session, you don't need to run these. 
 
 ```{r read-step-1-data}
-slo<-raster(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_Slo_10km_WGS84.tif"))
-bbpi<-raster(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_BBPI_10km_WGS84.tif"))
-fbpi<-raster(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_FBPI_10km_WGS84.tif"))
-prod<-raster(paste0(raw_input_layers_folder, "/Yool_GoG_POC_10km_WGS84.tif"))
-temp<-raster(paste0(raw_input_layers_folder, "/BO_GoG_Temp_10km_WGS84.tif"))
-sal<-raster(paste0(raw_input_layers_folder, "/BO_GoG_Sal_10km_WGS84.tif"))
+# slo<-raster(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_Slo_10km_WGS84.tif"))
+# bbpi<-raster(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_BBPI_10km_WGS84.tif"))
+# fbpi<-raster(paste0(raw_input_layers_folder, "/GEBCO2020_GoG_FBPI_10km_WGS84.tif"))
+# prod<-raster(paste0(raw_input_layers_folder, "/Yool_GoG_POC_10km_WGS84.tif"))
+# temp<-raster(paste0(raw_input_layers_folder, "/BO_GoG_Temp_10km_WGS84.tif"))
+# sal<-raster(paste0(raw_input_layers_folder, "/BO_GoG_Sal_10km_WGS84.tif"))
 ```
 
 
