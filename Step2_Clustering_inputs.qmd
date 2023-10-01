@@ -333,7 +333,7 @@ plot(prod, main="Clustered Productivity")
 
 ```{r write-raster-prod}
 
-terra::writeRaster(topo, filename=(paste0(clust_input_layers_folder, "/", input_type, "_", no_of_clusters, "clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+terra::writeRaster(prod, filename=(paste0(clust_input_layers_folder, "/", input_type, "_", no_of_clusters, "clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
 
 # Water mass structure
@@ -463,5 +463,5 @@ plot(wms, main="Clustered Water Mass Structure")
 
 ```{r write-raster-wms}
 
-terra::writeRaster(topo, filename=(paste0(clust_input_layers_folder, "/", input_type, "_", no_of_clusters, "clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
+terra::writeRaster(wms, filename=(paste0(clust_input_layers_folder, "/", input_type, "_", no_of_clusters, "clusters_10km_WGS84.tif")), overwrite=TRUE, format="GTiff")
 ```
