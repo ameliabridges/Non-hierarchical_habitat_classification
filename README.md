@@ -12,6 +12,8 @@ Should you notice any issues with the code or have any questions, please contact
 
 This guidance comprises 3 steps - accessing the data, clustering the input variables and combining the layers to create your benthic habitat classification.
 
+<img src="images/schematic.jpg" width="100%" />
+
 To get started, follow these steps (NB: please make sure you have R and R Studio installed): 
 
   1. Click on the green 'Code' button & then the 'Download Zip' (circled in red).
