@@ -16,7 +16,7 @@ To get started, follow these steps (NB: please make sure you have R and R Studio
 
   1. Click on the green 'Code' button & then the 'Download Zip' (circled in red).
 
-  ![Click these buttons to donwload the repo a zip folder.](CodeButton.jpg)
+  ![Click these buttons to donwload the repo a zip folder.](./CodeButton.jpg)
 
   2. Unzip the folder in the location you want to work - e.g. Desktop/Documents etc. 
 

@@ -67,11 +67,11 @@ Firstly, we convert the rasters for each clustered variable into a table and com
 
 ```{r combine-dfs}
 topo_xyz<-as.data.frame(rasterToPoints(topo))%>%
-  rename("topo_class"="Topography_4clusters_10km_WGS84")
+  rename("topo_class"=3)
 prod_xyz<-as.data.frame(rasterToPoints(prod))%>%
-  rename("prod_class"="Productivity_4clusters_10km_WGS84")
+  rename("prod_class"=3)
 wms_xyz<-as.data.frame(rasterToPoints(wms))%>%
-  rename("wms_class"="WaterMassStructure_3clusters_10km_WGS84")
+  rename("wms_class"=3)
 
 # combine into on xyz1z2z3 etc.
 comb_xyz<-topo_xyz%>%

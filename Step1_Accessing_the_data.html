@@ -126,18 +126,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <section id="an-introduction-to-this-document" class="level1">
 <h1>An introduction to this document</h1>
-<p>This document was developed as part of a pipeline to assist delegates of the ‘Habitat Conservation and Marine Spatial Planning’ workshop at the Deep Ocean Collective Solution Accelerator Meeting (Scripps Institution of Oceanography 2-5th October 2023) in developing regional benthic habitat classifications. The pipeline mirrors that used in <a href="https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub">McQuaid et al.&nbsp;(2023)</a>.</p>
-<p>The <a href="XXX">repository</a> is designed to be downloaded as a zip folder and for the scripts to be run sequentially (steps 1 to 3) in the same R Studio session. This document is <em>not</em> designed to provide a thorough background in the theory of non-hierarchical habitat classification, nor the variable selection process. For this, we recommend reading <a href="https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#bb0400">Howell (2010)</a> or the abovementioned McQuaid <em>et al.</em> (2023).</p>
+<p>This series of documents were developed as part of a pipeline to assist delegates of the ‘Habitat Conservation and Marine Spatial Planning’ workshop at the Deep Ocean Collective Solution Accelerator Meeting (Scripps Institution of Oceanography 2-5th October 2023) in developing regional benthic habitat classifications. The pipeline mirrors that used in <a href="https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub">McQuaid et al.&nbsp;(2023)</a>.</p>
+<p>The <a href="https://github.com/ameliabridges/Non-hierarchical_habitat_classification">repository</a> is designed to be downloaded as a zip folder and for the scripts to be run sequentially (steps 1 to 3) in the same R Studio session. This document is <em>not</em> designed to provide a thorough background in the theory of non-hierarchical habitat classification, nor the variable selection process. For this, we recommend reading <a href="https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#bb0400">Howell (2010)</a> or the abovementioned McQuaid <em>et al.</em> (2023).</p>
 <p>Should you notice any issues with the code or have any questions, please contact Dr Amelia Bridges at the University of Plymouth <a href="amelia.bridges@plymouth.ac.uk">amelia.bridges@plymouth.ac.uk</a>.</p>
 </section>
 <section id="prepare-your-folder-structure-working-environment" class="level1">
 <h1>Prepare your folder structure &amp; working environment</h1>
+<p>You will need the following packages for this script to work. If you have already installed them, you can run the library() function to call them. If you have not installed them before, you need to run the install.packages() function.</p>
+<p>If you’re unsure, call them and if they throw an error then you know they’re not installed.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sdmpredictors)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MultiscaleDTM)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("sdmpredictors", "raster", "tidyverse", "MultiscaleDTM", "terra") # add/remove packages as required</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sdmpredictors)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(raster)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MultiscaleDTM)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(terra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ensuring consistent structures/naming conventions conventions for folder and files is a good data management practice and will save you time (and headaches!) in the future.</p>
 <p>Your working directory (wd) should be the folder you’ve downloaded from this GitHub repository where the .Rproj file is located. You can check this by running getwd().</p>
@@ -154,8 +158,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>clust_input_layers_folder<span class="ot">&lt;-</span><span class="fu">paste0</span>(wd, <span class="st">"/InputLayers"</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>output_layers_folder<span class="ot">&lt;-</span><span class="fu">paste0</span>(wd, <span class="st">"/OutputLayers"</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>results_folder<span class="ot">&lt;-</span><span class="fu">paste0</span>(wd, <span class="st">"/Results"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(output_layers_folder) <span class="co"># this makes the folder as empty folders won't be listed in the Git repo</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>results_folder<span class="ot">&lt;-</span><span class="fu">paste0</span>(wd, <span class="st">"/Results"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dir.create</span>(results_folder) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>my_plot_theme <span class="ot">&lt;-</span> <span class="cf">function</span>(...){</span>
@@ -164,7 +170,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">axis.line =</span> ggplot2<span class="sc">::</span><span class="fu">element_line</span>(<span class="at">colour =</span> <span class="st">"grey50"</span>),</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis.title.y =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>, <span class="at">angle=</span><span class="dv">90</span>),</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">axis.title.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">face=</span><span class="st">"bold"</span>),</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">fill=</span><span class="cn">NA</span>, <span class="at">linewidth=</span><span class="dv">1</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">panel.border =</span> <span class="fu">element_rect</span>(<span class="at">colour =</span> <span class="st">"black"</span>, <span class="at">fill=</span><span class="cn">NA</span>),</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">plot.title =</span> ggplot2<span class="sc">::</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">14</span>,<span class="at">hjust=</span><span class="fl">0.5</span>),</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">legend.text.align =</span> <span class="fl">0.5</span>,</span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">legend.title.align =</span> <span class="dv">0</span>,</span>
