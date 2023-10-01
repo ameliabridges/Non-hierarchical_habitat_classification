@@ -37,4 +37,4 @@ To get started, follow these steps (NB: please make sure you have R and R Studio
   10. Work through the chunks of code in the script until you reach the end. 
 
 
-*The .qmd documents are the scripts used to create the .html files. These allow you to work through the process manually and later variables/clusters/datasets if you wish. 
+*The .qmd documents are the scripts used to create the .html files. These allow you to work through the process manually and alter variables/clusters/datasets if you wish. 
