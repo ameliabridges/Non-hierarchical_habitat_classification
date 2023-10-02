@@ -20,8 +20,6 @@ To get started, follow these steps (NB: please make sure you have R and R Studio
 
   1. Click on the green 'Code' button & then the 'Download Zip' (circled in red).
 
-<img src="Images/CodeButton.JPG" width="50%" />
-
   2. Unzip the folder in the location you want to work - e.g. Desktop/Documents etc. 
 
   3. Open the .html files and familiarize yourself with the process and what the outputs look like.
