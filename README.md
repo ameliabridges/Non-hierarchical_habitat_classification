@@ -4,7 +4,7 @@
 
 This series of documents were developed by scientists in the University of Plymouth's [Deep Sea Conservation Research Unit](https://deepseacru.org/) as part of a pipeline to assist delegates of the 'Habitat Conservation and Marine Spatial Planning' workshop at the Deep Ocean Collective Solution Accelerator Meeting (Scripps Institution of Oceanography, 2-5th October 2023) in developing regional benthic habitat classifications. The pipeline mirrors that used in [McQuaid et al. (2023)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub).
 
-<img src="images/UoP_Logo.png" width="50%" style="center" />
+<img src="images/UoP_Logo.png" width="50%"/>
 
 The [repository](https://github.com/ameliabridges/Non-hierarchical_habitat_classification) is designed to be downloaded as a zip folder and for the scripts to be run sequentially (steps 1 to 3) in the same R Studio session. This document is *not* designed to provide a thorough background in the theory of non-hierarchical habitat classification, nor the variable selection process. For this, we recommend reading [Howell (2010)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#bb0400) or the abovementioned McQuaid *et al.* (2023).
 
