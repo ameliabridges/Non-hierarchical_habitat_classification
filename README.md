@@ -4,7 +4,9 @@
 
 This series of documents were developed by scientists in the University of Plymouth's [Deep Sea Conservation Research Unit](https://deepseacru.org/) as part of a pipeline to assist delegates of the 'Habitat Conservation and Marine Spatial Planning' workshop at the Deep Ocean Collective Solution Accelerator Meeting (Scripps Institution of Oceanography, 2-5th October 2023) in developing regional benthic habitat classifications. The pipeline mirrors that used in [McQuaid et al. (2023)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub).
 
-<img src="Images/UoP_Logo.png" width="50%" align="center"/>
+<p align="center">
+  <img src="Images/UoP_Logo.png" width="50%" />
+</p>
 
 The work in this demonstration aligns with the [UN Ocean Decade Challenger 150 Programme](https://challenger150.world/) Habitat Mapping Technical Working Group. 
 
@@ -19,8 +21,6 @@ Should you notice any issues with the code or have any questions, please contact
 ## How to use this repository 
 
 This guidance comprises 3 steps - accessing the data, clustering the input variables and combining the layers to create your benthic habitat classification.
-
-<img src="Images/Schematic.JPG" width="80%" />
 
 To get started, follow these steps (NB: please make sure you have R and R Studio installed): 
 
