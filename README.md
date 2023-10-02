@@ -4,11 +4,7 @@
 
 This series of documents were developed by scientists in the University of Plymouth's [Deep Sea Conservation Research Unit](https://deepseacru.org/) as part of a pipeline to assist delegates of the 'Habitat Conservation and Marine Spatial Planning' workshop at the Deep Ocean Collective Solution Accelerator Meeting (Scripps Institution of Oceanography, 2-5th October 2023) in developing regional benthic habitat classifications. The pipeline mirrors that used in [McQuaid et al. (2023)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub).
 
-<img src="Images/UoP_Logo.png" width="50%" align="center"/>
-
 The work in this demonstration aligns with the [UN Ocean Decade Challenger 150 Programme](https://challenger150.world/) Habitat Mapping Technical Working Group. 
-
-<img src="Images/Challenger_150_Logo.png" width="30%" align="center"/>
 
 The [repository](https://github.com/ameliabridges/Non-hierarchical_habitat_classification) is designed to be downloaded as a zip folder and for the scripts to be run sequentially (steps 1 to 3) in the same R Studio session. This document is *not* designed to provide a thorough background in the theory of non-hierarchical habitat classification, nor the variable selection process. For this, we recommend reading [Howell (2010)](https://www.sciencedirect.com/science/article/pii/S0079661123000599?via%3Dihub#bb0400) or the abovementioned McQuaid *et al.* (2023). 
 
@@ -19,8 +15,6 @@ Should you notice any issues with the code or have any questions, please contact
 ## How to use this repository 
 
 This guidance comprises 3 steps - accessing the data, clustering the input variables and combining the layers to create your benthic habitat classification.
-
-<img src="Images/Schematic.JPG" width="80%" />
 
 To get started, follow these steps (NB: please make sure you have R and R Studio installed): 
 
