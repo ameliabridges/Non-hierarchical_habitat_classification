@@ -8,7 +8,7 @@ This series of documents were developed by scientists in the University of Plymo
   <img src="Images/UoP_Logo.png" width="50%" />
 </p>
 
-The work in this demonstration aligns with the [UN Ocean Decade Challenger 150 Programme](https://challenger150.world/) Habitat Mapping Technical Working Group. 
+The work in this demonstration aligns with the [UN Ocean Decade Challenger 150 Programme](https://challenger150.world/) Habitat Mapping Technical Working Group. This group will be formally launched soon so please keep an eye on the website and if you're working in the deep ocean habitat mapping/classification/modelling space, please do join.
 
 <p align="center">
   <img src="Images/Challenger_150_Logo.png" width="20%" />
