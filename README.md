@@ -22,7 +22,11 @@ Should you notice any issues with the code or have any questions, please contact
 
 ## How to use this repository 
 
-This guidance comprises 3 steps - accessing the data, clustering the input variables and combining the layers to create your benthic habitat classification.
+This guidance comprises 3 steps (these link to rendered webpages explaining each step): 1) [Accessing the Data](https://htmlpreview.github.io/?https://github.com/ameliabridges/Non-hierarchical_habitat_classification/blob/main/Step1_Accessing_the_data.html), 2) [Clustering Inputs](https://htmlpreview.github.io/?https://github.com/ameliabridges/Non-hierarchical_habitat_classification/blob/main/Step2_Clustering_inputs.html) and 3) [Combining Inputs](https://htmlpreview.github.io/?https://github.com/ameliabridges/Non-hierarchical_habitat_classification/blob/main/Step3_Combining_inputs.html).
+
+<p align="center">
+  <img src="Images/Schematic.jpg" width="80%" />
+</p>
 
 To get started, follow these steps (NB: please make sure you have R and R Studio installed): 
 
