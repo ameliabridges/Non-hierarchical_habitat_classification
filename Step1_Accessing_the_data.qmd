@@ -190,7 +190,12 @@ Scale factor is calculated by by multiplying the grid resolution (in this case 1
   + 2 x 10 km = 20 km; identifying habitats at the tens of km scale 
 * BBPI: inner: 1, outer = 10
   + 10 x 10 km = 100 km; identifying habitats at the hundreds of km scale 
-  
+
+To make sure this is clear, we'll run through another example. Say you were working with a 200 m x 200 m bathymetry grid, and you want to look at megahabitats on the scale of 100 km. 200 m is equivalent to 0.2 km. 100 km / 0.2 km is 500. Therefore, you would set your outer radius to  500 if you wanted to identify whether a point is relativly high or low on compared to the 100 km around it. The calculation for scale factor is:
+
+* **Scale Factor (km) = Horizontal resolution of data (km) x outer radius (cells)**
+
+
 Note: the values of BPI are relative and not comparable across tools (e.g. if you make your layer in Arc *versus* R, there will likely be differences).
 
 ```{r calc-bbpi}
